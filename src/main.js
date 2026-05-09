@@ -1,16 +1,20 @@
 import boat from './boat.js';
+import river from './river.js';
 
 const config = {
     type: Phaser.AUTO,
     parent: 'app',
-    width: 960,
+    width: 800,  // 960 before
     height: 600,
     backgroundColor: '#000000',
     physics: {
-        default: 'arcade',
-        arcade: { gravity: { y: 0 }, debug: false },
+        // default: 'arcade',
+        // arcade: { gravity: { y: 0 }, debug: false },
+        default: 'matter',
+        matter: {gravity: { y: 0}, debug: true }
     },
-    scene: [boat]
+    // scene: [boat]
+    scene: [river]
 };
 
 new Phaser.Game(config);
