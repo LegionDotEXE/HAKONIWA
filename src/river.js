@@ -1,3 +1,5 @@
+import Boat from './new_boat.js';
+
 export default class River extends Phaser.Scene
 {
     constructor()
@@ -10,6 +12,14 @@ export default class River extends Phaser.Scene
         this.load.path = './assets/';
 
         this.load.image('boat', 'boat.png');
+        this.load.spritesheet('leftPaddle', 'left_paddle.png', {
+            frameWidth: 32,
+            frameHeight: 40
+        });
+        this.load.spritesheet('rightPaddle', 'right_paddle.png', {
+            frameWidth: 32,
+            frameHeight: 40
+        });
 
         // river tilemap
         this.load.image('tilesetImage', 'riverTileset.png');
@@ -29,9 +39,17 @@ export default class River extends Phaser.Scene
         this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
         const boatSpawn = map.findObject('Spawns', (obj) => obj.name === 'boatSpawn');
-        this.boat = this.matter.add.sprite(boatSpawn.x, boatSpawn.y, 'boat', 0);
+        this.boat = new Boat(this.matter.world, boatSpawn.x, boatSpawn.y, 'boat', 'leftPaddle', 'rightPaddle');
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    }
+
+    update()
+    {
+        if (this.boat)
+        {
+            this.boat.update();
+        }
     }
 }
