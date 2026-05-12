@@ -90,7 +90,7 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         {
             this.scene.anims.create({
                 key: 'left-forward',
-                frameRate: 6,
+                frameRate: 10,
                 repeat: 0,
                 frames: this.scene.anims.generateFrameNumbers(left, {
                     start: 5,
@@ -103,7 +103,7 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         {
             this.scene.anims.create({
                 key: 'left-backward',
-                frameRate: 6,
+                frameRate: 10,
                 repeat: 0,
                 frames: this.scene.anims.generateFrameNumbers(left, {
                     start: 1,
@@ -116,7 +116,7 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         {
             this.scene.anims.create({
                 key: 'right-forward',
-                frameRate: 6,
+                frameRate: 10,
                 repeat: 0,
                 frames: this.scene.anims.generateFrameNumbers(right, {
                     start: 5,
@@ -129,7 +129,7 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         {
             this.scene.anims.create({
                 key: 'right-backward',
-                frameRate: 6,
+                frameRate: 10,
                 repeat: 0,
                 frames: this.scene.anims.generateFrameNumbers(right, {
                     start: 1,
