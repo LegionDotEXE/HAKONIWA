@@ -153,8 +153,13 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         const now = this.scene.time.now;
         const stroke = side === 'left' ? this.leftStroke : this.rightStroke;
 
-        if(stroke.firstRole === null || now - stroke.firstTime > STROKE_WINDOW_MS) {
+        if (stroke.firstRole === null || now - stroke.firstTime > STROKE_WINDOW_MS) {
             stroke.firstRole = role;
+            stroke.firstTime = now;
+            return;
+        }
+
+        if (stroke.firstRole === role) {
             stroke.firstTime = now;
             return;
         }
@@ -222,7 +227,6 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         this.leftPaddle.x = this.x + Math.cos(heading - Math.PI / 2) * sideOffset;
         this.leftPaddle.y = this.y + Math.sin(heading - Math.PI / 2) * sideOffset;
 
-        // Right Side: Add 90 degrees to the heading
         this.rightPaddle.x = this.x + Math.cos(heading + Math.PI / 2) * sideOffset;
         this.rightPaddle.y = this.y + Math.sin(heading + Math.PI / 2) * sideOffset;
 
