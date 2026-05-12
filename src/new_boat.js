@@ -1,8 +1,8 @@
 const STROKE_WINDOW_MS = 350;
-const STROKE_FORCE = 0.5;
+const STROKE_FORCE = 0.3;
 const SYNC_WINDOW_MS = 180;
-const SYNC_BONUS_FORCE = 0.01;
-const TURN_IMPULSE = 0.04;
+const SYNC_BONUS_FORCE = 0.1;
+const TURN_IMPULSE = 0.05;
 
 export default class Boat extends Phaser.Physics.Matter.Sprite
 {
@@ -11,11 +11,17 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         super(world, x, y, texture);
         world.scene.add.existing(this);
 
+        this.setBody({
+            type: 'rectangle',
+            width: 15,
+            height: 25
+        });
+
         this.leftPaddle = world.scene.add.sprite(0, 0, left);
         this.rightPaddle = world.scene.add.sprite(0, 0, right); 
 
         this.setFrictionAir(0.05);
-        this.setMass(20);
+        this.setMass(15);
 
         // tracking which direction of the paddle is set before stroking
         this.leftStroke = { firstRole: null, firstTime: 0 };
@@ -205,7 +211,7 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         
         // see split 3 notes to understand the rotation movement
         if (synced) {
-            const totalForce = STROKE_FORCE * 0.6 + SYNC_BONUS_FORCE;
+            const totalForce = STROKE_FORCE * 0.2 + SYNC_BONUS_FORCE;
 
             this.applyForce({
                 x: forwardX * totalForce * dir,
