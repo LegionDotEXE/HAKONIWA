@@ -1,5 +1,8 @@
 import Boat from './new_boat.js';
 import FishingSystem from './fishing.js';
+import InventorySystem from './inventory.js';
+import ShopSystem from './shop.js';
+
 
 export default class River extends Phaser.Scene
 {
@@ -42,6 +45,10 @@ export default class River extends Phaser.Scene
         const boatSpawn = map.findObject('Spawns', (obj) => obj.name === 'boatSpawn');
         this.boat = new Boat(this.matter.world, boatSpawn.x, boatSpawn.y, 'boat', 'leftPaddle', 'rightPaddle');
         this.fishing = new FishingSystem(this, this.boat);
+
+        // Inventory and Shop
+        this.inventory = new InventorySystem(this, this.boat, this.fishing);
+        this.shop = new ShopSystem(this, this.inventory);
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
