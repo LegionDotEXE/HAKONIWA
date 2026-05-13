@@ -28,6 +28,8 @@ export default class River extends Phaser.Scene
         // river tilemap
         this.load.image('tilesetImage', 'riverTileset.png');
         this.load.tilemapTiledJSON('tilemapJSON', 'river_tilemap.json');
+
+        this.load.image('coin', 'coin.png')
     }
 
     create()
