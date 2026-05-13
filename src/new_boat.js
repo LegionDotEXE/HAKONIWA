@@ -220,6 +220,8 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
 
             this.setAngularVelocity(this.body.angularVelocity * 0.3);
         }
+
+        if (this.scene.inventory) this.scene.inventory.onStroke();
     }
 
     update()
