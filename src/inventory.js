@@ -3,13 +3,13 @@
 const HP_MAX    = 100;
 const HUD_DEPTH = 30;
 
-const COIN_SPAWN_INTERVAL = 20000;   // ms between batches
-const COIN_BATCH_SIZE     = 2;       // coins per batch
-const COIN_MAX_LIVE       = 5;       // max coins in the world at once
-const COIN_SEARCH_TRIES   = 60;      // attempts to find a valid water tile
-const COIN_SPAWN_RADIUS   = 350;     // max px from boat
-const COIN_MIN_RADIUS     = 120;     // min px from boat
-const PICKUP_RADIUS       = 40;      // px — collection distance
+const COIN_SPAWN_INTERVAL = 20000;   
+const COIN_BATCH_SIZE     = 2;     
+const COIN_MAX_LIVE       = 5;       
+const COIN_SEARCH_TRIES   = 60;      
+const COIN_SPAWN_RADIUS   = 350;     
+const COIN_MIN_RADIUS     = 120;     
+const PICKUP_RADIUS       = 40;      
 
 const COIN_WORLD_SIZE = 20;
 const COIN_BURST_SIZE = 10;
@@ -25,7 +25,6 @@ function makeCoin(scene, x, y, size, depth) {
             .setDisplaySize(size, size)
             .setDepth(depth);
     }
-    // fallback — scene.add.circle is a real game object with correct .x/.y
     return scene.add.circle(x, y, size / 2, 0xf7c948)
         .setStrokeStyle(2, 0xc8922a)
         .setDepth(depth);
@@ -53,13 +52,10 @@ export default class InventorySystem {
         this._hookFishing();
     }
 
-    // ─── HUD ──────────────────────────────────────────────────
     _buildHUD() {
         const scene = this.scene;
         const cam   = scene.cameras.main;
 
-        // Layout right-to-left: [right edge 8px] [icon 20px] [6px gap] [number, right-aligned]
-        // Number uses origin(1, 0.5) so it expands leftward — never overlaps the icon.
         const iconCx = cam.width - 8 - COIN_HUD_SIZE / 2;
         const textX  = iconCx - COIN_HUD_SIZE / 2 - 6;
         const rowY   = 18;
@@ -73,14 +69,13 @@ export default class InventorySystem {
                 .setDepth(HUD_DEPTH)
                 .setScrollFactor(0);
         } else {
-            // fallback circle — must use scene.add.circle, NOT Graphics
             this._goldIcon = scene.add.circle(iconCx, rowY, COIN_HUD_SIZE / 2, 0xf7c948)
                 .setStrokeStyle(2, 0xc8922a)
                 .setDepth(HUD_DEPTH)
                 .setScrollFactor(0);
         }
 
-        // Gold number — right-aligned, grows left
+        // Gold number 
         this._goldText = scene.add.text(textX, rowY, '0', {
             fontFamily: 'monospace',
             fontSize:   '15px',
@@ -102,14 +97,14 @@ export default class InventorySystem {
             color:      '#ffffff',
         }).setOrigin(0, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        // Full-screen red flash — alpha 0 until damage()
+        // Full-screen red flash
         this._damageFlash = scene.add.rectangle(
             cam.width / 2, cam.height / 2,
             cam.width, cam.height,
             0xff0000, 0
         ).setDepth(HUD_DEPTH - 1).setScrollFactor(0);
 
-        // Toast notification — top-centre
+        // Toast notification
         this._notifText = scene.add.text(cam.width / 2, 46, '', {
             fontFamily: 'monospace',
             fontSize:   '13px',
@@ -121,7 +116,7 @@ export default class InventorySystem {
         }).setOrigin(0.5, 0).setDepth(HUD_DEPTH).setScrollFactor(0).setAlpha(0);
     }
 
-    // ─── Gold ─────────────────────────────────────────────────
+    // Gold Management
     addGold(amount) {
         this.gold += amount;
         this._goldText.setText(String(this.gold));
@@ -140,19 +135,19 @@ export default class InventorySystem {
         if (this.scene.shop) this.scene.shop.onGoldChanged(this.gold);
     }
 
-    // ─── HP ───────────────────────────────────────────────────
-    damage(amount) {
-        this.hp = Math.max(0, this.hp - amount);
-        this._refreshHP();
-        this.scene.tweens.add({
-            targets:  this._damageFlash,
-            alpha:    0.35,
-            duration: 60,
-            yoyo:     true,
-            onComplete: () => this._damageFlash.setAlpha(0),
-        });
-        if (this.hp <= 0) this._onBoatDestroyed();
-    }
+    // // HP Management
+    // damage(amount) {
+    //     this.hp = Math.max(0, this.hp - amount);
+    //     this._refreshHP();
+    //     this.scene.tweens.add({
+    //         targets:  this._damageFlash,
+    //         alpha:    0.35,
+    //         duration: 60,
+    //         yoyo:     true,
+    //         onComplete: () => this._damageFlash.setAlpha(0),
+    //     });
+    //     if (this.hp <= 0) this._onBoatDestroyed();
+    // }
 
     heal(amount) {
         this.hp = Math.min(HP_MAX, this.hp + amount);
@@ -173,17 +168,16 @@ export default class InventorySystem {
         // this.scene.time.delayedCall(1500, () => this.scene.scene.start('GameOver'));
     }
 
-    // ─── Stroke hook ──────────────────────────────────────────
-    // Intentionally empty — gold only comes from coins and fishing.
+    // Stroke callback
     onStroke() {}
 
-    // ─── Fishing hook ─────────────────────────────────────────
+    // Fishing callback hook 
     _hookFishing() {
         const fs = this.fishing;
         if (!fs) return;
         const _originalEnd = fs._end.bind(fs);
         fs._end = (caught) => {
-            _originalEnd(caught);       // original logic runs first, unchanged
+            _originalEnd(caught);      
             if (caught === true) {
                 this.addGold(3);
                 this.notify('+3  🪙  Nice catch!', '#55ccff');
@@ -196,11 +190,11 @@ export default class InventorySystem {
         };
     }
 
-    // ─── Water tile check ─────────────────────────────────────
+    //  water tile check
 _isWater(wx, wy) {
     if (!this._collisionLayer || !this._map) return true;
     
-    // 1. Reject positions outside the map boundaries
+    // only check within map boundaries
     if (wx < 0 || wx > this._map.widthInPixels || wy < 0 || wy > this._map.heightInPixels) {
         return false;
     }
@@ -208,12 +202,10 @@ _isWater(wx, wy) {
     const tile = this._collisionLayer.getTileAtWorldXY(wx, wy);
     if (!tile) return true; // No tile data = open water
 
-    // 2. Strictly check for the collides property
-    // setCollisionByProperty({ collides: true }) sets this to exactly true on land tiles
     return tile.collides !== true;
 }
 
-    // ─── Coin spawner ─────────────────────────────────────────
+    // Coin spawning logic
     _startCoinSpawner() {
         this.scene.time.addEvent({
             delay:         COIN_SPAWN_INTERVAL,
@@ -250,10 +242,8 @@ _isWater(wx, wy) {
     _createCoin(x, y) {
         const scene = this.scene;
 
-        // coin is always a real game object — .x and .y are always correct
         const obj = makeCoin(scene, x, y, COIN_WORLD_SIZE, 5);
 
-        // bob: tweens obj.y directly — works because obj has a real .y property
         const bobTween = scene.tweens.add({
             targets:  obj,
             y:        y - 5,
@@ -277,11 +267,11 @@ _isWater(wx, wy) {
             color: '#f7c948', stroke: '#000000', strokeThickness: 2,
         }).setOrigin(0.5, 1).setDepth(6).setAlpha(0);
 
-        // spawnX/spawnY store the original position for label placement
         this._pickups.push({ obj, label, bobTween, spinTween, collected: false });
     }
 
-    // ─── Per-frame collection check ────────────────────────────
+    // proximity check for boat and coins
+    // called from river.js update() every frame
     _checkPickups() {
         if (!this.boat) return;
         const bx = this.boat.x;
@@ -290,7 +280,6 @@ _isWater(wx, wy) {
         this._pickups.forEach(p => {
             if (p.collected) return;
 
-            // obj.x and obj.y are always correct for both image and circle
             const dx = p.obj.x - bx;
             const dy = p.obj.y - by;
             const d  = Math.sqrt(dx * dx + dy * dy);
@@ -299,12 +288,10 @@ _isWater(wx, wy) {
             p.label.setAlpha(d < 80 ? 1 : 0);
 
             if (d < PICKUP_RADIUS) {
-                p.collected = true;       // mark first — prevents double-collect
+                p.collected = true;     
                 this._collectCoin(p);
             }
         });
-
-        // purge collected entries
         this._pickups = this._pickups.filter(p => !p.collected);
     }
 
@@ -312,22 +299,17 @@ _isWater(wx, wy) {
         const scene = this.scene;
         const cam   = scene.cameras.main;
 
-        // capture world position before destroying anything
         const x = p.obj.x;
         const y = p.obj.y;
 
-        // stop idle tweens
         p.bobTween.stop();
         p.spinTween.stop();
 
-        // destroy coin and label immediately — no lingering
         p.obj.destroy();
         p.label.destroy();
 
-        // burst at the captured position
         this._burstCoins(x, y);
 
-        // ghost flies toward the HUD coin icon
         const ghost = makeCoin(scene, x, y, COIN_GHOST_SIZE, 21);
         const hudX  = cam.scrollX + cam.width - 8 - COIN_HUD_SIZE / 2;
         const hudY  = cam.scrollY + 18;
@@ -343,7 +325,6 @@ _isWater(wx, wy) {
             onComplete: () => ghost.destroy(),
         });
 
-        // credit gold after the ghost has nearly arrived
         scene.time.delayedCall(250, () => this.addGold(1));
     }
 
@@ -367,7 +348,7 @@ _isWater(wx, wy) {
         }
     }
 
-    // ─── Notification toast ───────────────────────────────────
+    // Notification for certian events
     notify(msg, color = '#ffffff') {
         this._notifQueue.push({ msg, color });
         if (!this._notifBusy) this._flushNotif();
@@ -390,7 +371,6 @@ _isWater(wx, wy) {
         });
     }
 
-    // ─── Per-frame update — call from river.js update() ───────
     update() {
         this._checkPickups();
     }
