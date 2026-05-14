@@ -223,13 +223,21 @@ export default class InventorySystem {
     }
 
     // ─── Water tile check ─────────────────────────────────────
-    _isWater(wx, wy) {
-        if (!this._collisionLayer || !this._map) return true;
-        const tile = this._collisionLayer.getTileAtWorldXY(wx, wy);
-        if (tile === null)  return true;   // empty cell = open water
-        if (!tile.collides) return true;   // non-colliding tile = water
-        return false;                      // colliding tile = land
+_isWater(wx, wy) {
+    if (!this._collisionLayer || !this._map) return true;
+    
+    // 1. Reject positions outside the map boundaries
+    if (wx < 0 || wx > this._map.widthInPixels || wy < 0 || wy > this._map.heightInPixels) {
+        return false;
     }
+
+    const tile = this._collisionLayer.getTileAtWorldXY(wx, wy);
+    if (!tile) return true; // No tile data = open water
+
+    // 2. Strictly check for the collides property
+    // setCollisionByProperty({ collides: true }) sets this to exactly true on land tiles
+    return tile.collides !== true;
+}
 
     // ─── Coin spawner ─────────────────────────────────────────
     _startCoinSpawner() {
