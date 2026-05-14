@@ -1,4 +1,4 @@
-// shop.js — Shop UI Layer  ← FINAL (C6)
+// shop.js — Shop UI Layer 
 // Depends on: inventory.js
 
 const SHOP_CATALOGUE = [
@@ -14,6 +14,7 @@ const SHOP_CATALOGUE = [
     },
     {
         id: 'hull_repair', name: 'Hull Repair Kit', icon: 'item_hull',
+        //25 HP to boat
         cost: 10, description: 'Restores 25 HP to the boat.',
         stackable: true, maxStack: 99,
         effect(scene) { scene.inventory.heal(25); },
@@ -30,7 +31,8 @@ const SHOP_CATALOGUE = [
         stackable: false,
         effect(scene) {
             scene.boat._hasAnchor = true;
-            // binds SPACE — does not touch existing Q/W/O/P keys
+            // used [Space] key for anchor
+            // No usage of predefined Phaser.Input.Keyboard.KeyCodes since we want to avoid hardcoding
             const space = scene.input.keyboard.addKey(
                 Phaser.Input.Keyboard.KeyCodes.SPACE
             );
@@ -90,25 +92,31 @@ export default class ShopSystem {
 
         this._loadAssets(() => {
             this._buildPanel();
-            this._buildZone();  // ← new in C6
-            this._bindKey();    // ← new in C6
+            this._buildZone(); 
+            this._bindKey();    
         });
     }
 
-    // ── Asset loading ─────────────────────────────────────────
+    // load Assets 
     _loadAssets(cb) {
         const scene   = this.scene;
+        
+        // NOTE: river.js already sets this.load.path = './assets/' in preload().
+        // Passing 'assets/' again causes "./assets/assets/..." 404 errors.
+        // We only pass the bare filename here.
         const needed  = SHOP_CATALOGUE.map(i => ({
-            key: i.icon, url: `assets/${i.icon}.png`,
+            key: i.icon, url: `${i.icon}.png`,
         }));
+        
         const missing = needed.filter(a => !scene.textures.exists(a.key));
         if (missing.length === 0) { cb(); return; }
+        
         missing.forEach(a => scene.load.image(a.key, a.url));
         scene.load.once('complete', cb);
         scene.load.start();
     }
 
-    // ── Panel ─────────────────────────────────────────────────
+    // Shop UI Panel
     _buildPanel() {
         const scene = this.scene;
         const cam   = scene.cameras.main;
@@ -130,7 +138,7 @@ export default class ShopSystem {
             -PANEL_W/2 + 8, -PANEL_H/2 + 8, PANEL_W - 16, PANEL_H - 16, 12
         );
 
-        const title = scene.add.text(0, -PANEL_H/2 + 28, '⚓  RIVER MARKET', {
+        const title = scene.add.text(0, -PANEL_H/2 + 28, 'RIVER MARKET', {
             fontFamily: 'monospace',
             fontSize:   '20px',
             color:      '#f7c948',
@@ -151,7 +159,7 @@ export default class ShopSystem {
                          PANEL_W/2 - 16, -PANEL_H/2 + 52);
 
         const closeBtn = scene.add.text(
-            PANEL_W/2 - 10, -PANEL_H/2 + 8, '✕', {
+            PANEL_W/2 - 10, -PANEL_H/2 + 8, 'X', {
                 fontFamily: 'monospace', fontSize: '18px', color: '#ff6666',
             }
         ).setOrigin(1, 0).setInteractive({ useHandCursor: true });
@@ -240,7 +248,7 @@ export default class ShopSystem {
         });
     }
 
-    // ── Paint helpers ─────────────────────────────────────────
+    // Row and Button rendering
     _paintRowBg(gfx, y, rowH, hover) {
         gfx.clear();
         gfx.fillStyle(0x3a2010, hover ? 1 : 0);
@@ -257,19 +265,15 @@ export default class ShopSystem {
         gfx.strokeRoundedRect(cx - w/2, cy - h/2, w, h, 5);
     }
 
-    // ── Shop Zone ─────────────────────────────────────────────
-    // To read position from Tiled instead of hardcoding shopX/shopY:
-    //   const obj = map.findObject('Spawns', o => o.name === 'shopZone');
-    //   const shopX = obj.x;  const shopY = obj.y;
+    // floating Shop Zone in world space, shows hint when boat is near
     _buildZone() {
         const scene = this.scene;
 
-        // Replace 400/200 with your Tiled spawn coordinates
         const shopX = 400;
         const shopY = 200;
 
-        // Floating sign in world space (uses world coords, not screen)
-        const sign = scene.add.text(shopX, shopY - 20, '🏪 SHOP', {
+        // Floating sign in world space
+        const sign = scene.add.text(shopX, shopY - 20, 'SHOP', {
             fontFamily: 'monospace',
             fontSize:   '13px',
             color:      '#f7c948',
@@ -277,7 +281,6 @@ export default class ShopSystem {
             padding:    { x: 6, y: 3 },
         }).setOrigin(0.5).setDepth(HUD_DEPTH);
 
-        // gentle float animation on the sign
         scene.tweens.add({
             targets:  sign,
             y:        shopY - 28,
@@ -287,12 +290,10 @@ export default class ShopSystem {
             ease:     'Sine.easeInOut',
         });
 
-        // invisible Matter sensor — does not collide, only detects proximity
         this._zoneSensor = scene.matter.add.circle(shopX, shopY, 60, {
             isSensor: true, isStatic: true, label: 'shopZone',
         });
 
-        // screen-fixed hint shown only while near the zone
         this._hint = scene.add.text(
             scene.cameras.main.width  / 2,
             scene.cameras.main.height - 52,
@@ -305,7 +306,6 @@ export default class ShopSystem {
             }
         ).setOrigin(0.5, 1).setDepth(HUD_DEPTH).setScrollFactor(0).setVisible(false);
 
-        // per-frame proximity check registered on the scene's update event
         scene.events.on('update', () => {
             const boat = this.inventory.boat;
             if (!boat) return;
@@ -320,7 +320,7 @@ export default class ShopSystem {
         });
     }
 
-    // ── Key binding ───────────────────────────────────────────
+    // Key binding to open/close shop
     _bindKey() {
         const eKey = this.scene.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes[SHOP_KEY]
@@ -330,7 +330,6 @@ export default class ShopSystem {
         });
     }
 
-    // ── Open / Close ──────────────────────────────────────────
     open() {
         this.isOpen = true;
         this._container.setVisible(true).setAlpha(0).setScale(0.85);
@@ -352,7 +351,7 @@ export default class ShopSystem {
         });
     }
 
-    // ── Buy logic ─────────────────────────────────────────────
+    // Buying logic with checks and feedback
     _tryBuy(item, btnBg, btnText, btnCx, y, btnW, btnH) {
         const qty   = this.inventory.owned[item.id] || 0;
         const maxed = item.stackable ? qty >= (item.maxStack || 1) : qty >= 1;
@@ -363,7 +362,7 @@ export default class ShopSystem {
             return;
         }
         if (this.inventory.gold < item.cost) {
-            this.inventory.notify('Not enough gold! 💰', '#ff5555');
+            this.inventory.notify('Not enough coins!!!', '#ff5555');
             shakeText(this.scene, btnText);
             return;
         }
@@ -378,7 +377,7 @@ export default class ShopSystem {
         popTween(this.scene, btnText);
     }
 
-    // ── Refresh row affordability state ───────────────────────
+    // Updates on item quantity changes to refresh owned counts
     _refreshRows() {
         this._itemRows.forEach(({ item, ownedText, btnText }) => {
             const qty    = this.inventory.owned[item.id] || 0;
@@ -389,9 +388,8 @@ export default class ShopSystem {
         });
     }
 
-    // ── Called by InventorySystem.addGold / spendGold ─────────
     onGoldChanged(gold) {
-        if (this._panelGoldText) this._panelGoldText.setText(`💰 ${gold}`);
+        if (this._panelGoldText) this._panelGoldText.setText(`${gold}`);
         if (this.isOpen) this._refreshRows();
     }
 }
