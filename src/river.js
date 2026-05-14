@@ -63,5 +63,11 @@ export default class River extends Phaser.Scene
         {
             this.boat.update();
         }
+
+        // coins proximity check and colleciton
+        if (this.inventory)
+        {
+            this.inventory.update();
+        }
     }
 }
