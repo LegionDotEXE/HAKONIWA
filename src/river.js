@@ -28,6 +28,8 @@ export default class River extends Phaser.Scene
         // river tilemap
         this.load.image('tilesetImage', 'riverTileset.png');
         this.load.tilemapTiledJSON('tilemapJSON', 'river_tilemap.json');
+
+        this.load.image('coin', 'coin.png')
     }
 
     create()
@@ -47,7 +49,8 @@ export default class River extends Phaser.Scene
         this.fishing = new FishingSystem(this, this.boat);
 
         // Inventory and Shop
-        this.inventory = new InventorySystem(this, this.boat, this.fishing);
+        //this.inventory = new InventorySystem(this, this.boat, this.fishing);
+        this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
         this.shop = new ShopSystem(this, this.inventory);
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
@@ -59,6 +62,12 @@ export default class River extends Phaser.Scene
         if (this.boat)
         {
             this.boat.update();
+        }
+
+        // coins proximity check and colleciton
+        if (this.inventory)
+        {
+            this.inventory.update();
         }
     }
 }
