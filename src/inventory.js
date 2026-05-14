@@ -1,25 +1,8 @@
-// ============================================================
 // inventory.js  –  Data / State Layer
-//
-// REQUIRED ASSET — add to river.js preload():
-//   this.load.image('coin', 'coin.png');   // 16–32 px gold coin sprite
-//   Falls back to a yellow circle if coin.png is missing.
-//
-// INTEGRATION — river.js create(), after cameras.main.setBounds():
-//   this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
-//   this.shop      = new ShopSystem(this, this.inventory);
-//
-// INTEGRATION — river.js update():
-//   if (this.inventory) this.inventory.update();
-//
-// DEALING DAMAGE from hazards:
-//   this.scene.inventory.damage(20);
-// ============================================================
 
 const HP_MAX    = 100;
 const HUD_DEPTH = 30;
 
-// ── Coin spawning constants ───────────────────────────────────
 const COIN_SPAWN_INTERVAL = 20000;   // ms between batches
 const COIN_BATCH_SIZE     = 2;       // coins per batch
 const COIN_MAX_LIVE       = 5;       // max coins in the world at once
@@ -33,17 +16,8 @@ const COIN_BURST_SIZE = 10;
 const COIN_GHOST_SIZE = 14;
 const COIN_HUD_SIZE   = 20;
 
-// ─────────────────────────────────────────────────────────────
-// makeCoin — always returns a proper game object with real .x/.y
-// so tweens and distance checks work correctly.
-//
-// If coin.png is loaded  → scene.add.image  (sprite)
-// Otherwise              → scene.add.circle (built-in shape, NOT Graphics)
-//
-// IMPORTANT: scene.add.graphics() was NOT used because Graphics draws
-// at internal coordinates, not at its own .x/.y — which breaks tween
-// position tracking and distance checks entirely.
-// ─────────────────────────────────────────────────────────────
+
+
 function makeCoin(scene, x, y, size, depth) {
     if (scene.textures.exists('coin') &&
         scene.textures.get('coin').key !== '__MISSING') {
@@ -115,14 +89,14 @@ export default class InventorySystem {
             strokeThickness: 3,
         }).setOrigin(1, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        // HP bar — below the fishing Fish counter (y≈12)
-        this._hpBarBg = scene.add.rectangle(12, 36, 120, 10, 0x550000)
+        // HP bar 
+        this._hpBarBg = scene.add.rectangle(12, 45, 120, 12, 0x550000)
             .setOrigin(0, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        this._hpBar = scene.add.rectangle(12, 36, 120, 10, 0xff3333)
+        this._hpBar = scene.add.rectangle(12, 45, 120, 12, 0xff3333)
             .setOrigin(0, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        this._hpText = scene.add.text(138, 36, `HP ${HP_MAX}`, {
+        this._hpText = scene.add.text(138, 45, `HP ${HP_MAX}`, {
             fontFamily: 'monospace',
             fontSize:   '11px',
             color:      '#ffffff',
