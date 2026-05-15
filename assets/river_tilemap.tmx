@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="85" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="133">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="85" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="154">
  <editorsettings>
   <export target="river_tilemap.json" format="json"/>
  </editorsettings>
@@ -562,7 +562,7 @@
 10,10,10,20,0,0,0,0,0,0,0,17,10,10,10,10,20,0,0,0,0,0,0,33,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10
 </data>
  </layer>
- <layer id="3" name="Decoration Layer" width="60" height="85" locked="1">
+ <layer id="3" name="Decoration Layer" width="60" height="85">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -651,62 +651,71 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,82,0,0,0,0,69,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="5" name="Currents">
-  <object id="4" gid="39" x="193.333" y="1188" width="32" height="32"/>
-  <object id="5" gid="38" x="162.667" y="1192" width="32" height="32"/>
-  <object id="6" gid="38" x="132" y="1190.67" width="32" height="32"/>
-  <object id="7" gid="38" x="98.6667" y="1190.67" width="32" height="32"/>
-  <object id="8" gid="39" x="222.667" y="1172" width="32" height="32"/>
-  <object id="9" gid="37" x="66.6667" y="1185.33" width="32" height="32"/>
-  <object id="10" gid="21" x="866" y="1826" width="32" height="32"/>
-  <object id="11" gid="21" x="898" y="1825.5" width="32" height="32"/>
-  <object id="12" gid="21" x="898" y="1856.5" width="32" height="32"/>
-  <object id="13" gid="21" x="898" y="1887.5" width="32" height="32"/>
-  <object id="14" gid="21" x="897.5" y="1919" width="32" height="32"/>
-  <object id="15" gid="21" x="897.5" y="1950" width="32" height="32"/>
-  <object id="16" gid="21" x="867.5" y="1857.5" width="32" height="32"/>
-  <object id="18" gid="21" x="868.5" y="1888.5" width="32" height="32"/>
-  <object id="19" gid="21" x="867.5" y="1921.5" width="32" height="32"/>
-  <object id="20" gid="21" x="866.5" y="1952" width="32" height="32"/>
-  <object id="21" gid="23" x="1229.45" y="161.455" width="32" height="32"/>
-  <object id="22" gid="23" x="1230" y="194" width="32" height="32"/>
-  <object id="23" gid="23" x="1231" y="225" width="32" height="32"/>
-  <object id="24" gid="39" x="1217" y="254" width="32" height="32"/>
-  <object id="26" gid="39" x="1188" y="267" width="32" height="32"/>
-  <object id="27" gid="39" x="1162" y="277" width="32" height="32"/>
-  <object id="28" gid="7" x="1223" y="134" width="32" height="32"/>
-  <object id="32" gid="7" x="1196" y="125" width="32" height="32"/>
-  <object id="33" gid="7" x="1169" y="120" width="32" height="32"/>
-  <object id="49" gid="38" x="1281.33" y="2526.67" width="32" height="32"/>
-  <object id="51" gid="38" x="1312" y="2529.33" width="32" height="32"/>
-  <object id="52" gid="23" x="1368" y="2476" width="32" height="32"/>
-  <object id="53" gid="23" x="1366.67" y="2448" width="32" height="32"/>
-  <object id="54" gid="23" x="1366.67" y="2424" width="32" height="32"/>
-  <object id="55" gid="23" x="1368" y="2400" width="32" height="32"/>
-  <object id="56" gid="23" x="1369.33" y="2366.67" width="32" height="32"/>
-  <object id="57" gid="5" x="1342.67" y="2502.67" width="32" height="32"/>
-  <object id="58" gid="5" x="1257.33" y="2546.67" width="32" height="32"/>
-  <object id="60" gid="5" x="1230.67" y="2557.33" width="32" height="32"/>
-  <object id="61" gid="5" x="1205.33" y="2573.33" width="32" height="32"/>
-  <object id="63" gid="6" x="1086.67" y="1450.67" width="32" height="32"/>
-  <object id="64" gid="6" x="1118.67" y="1450.67" width="32" height="32"/>
-  <object id="65" gid="6" x="1153.33" y="1452" width="32" height="32"/>
-  <object id="66" gid="6" x="1182.67" y="1450.67" width="32" height="32"/>
-  <object id="67" gid="6" x="1214.67" y="1450.67" width="32" height="32"/>
-  <object id="69" gid="6" x="1246.67" y="1450.67" width="32" height="32"/>
-  <object id="70" gid="6" x="1060" y="1452" width="32" height="32"/>
-  <object id="80" gid="39" x="1521.33" y="1164" width="32" height="32"/>
-  <object id="83" gid="39" x="1492" y="1177.33" width="32" height="32"/>
-  <object id="84" gid="39" x="1462.67" y="1189.33" width="32" height="32"/>
-  <object id="85" gid="39" x="1432" y="1206.67" width="32" height="32"/>
-  <object id="86" gid="39" x="1548" y="1148" width="32" height="32"/>
-  <object id="88" gid="39" x="1574.67" y="1133.33" width="32" height="32"/>
-  <object id="89" gid="39" x="1602.67" y="1120" width="32" height="32"/>
-  <object id="90" gid="39" x="1634.67" y="1106.67" width="32" height="32"/>
-  <object id="91" gid="39" x="1666.67" y="1093.33" width="32" height="32"/>
+ <objectgroup id="8" name="River Grasses">
+  <object id="153" gid="83" x="463" y="2591" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="4" name="Spawns" locked="1">
-  <object id="1" name="boatSpawn" x="441" y="2645">
+ <objectgroup id="5" name="Currents">
+  <object id="4" name="right-down" gid="39" x="193.333" y="1188" width="32" height="32" visible="0"/>
+  <object id="5" name="down" gid="38" x="162.667" y="1192" width="32" height="32"/>
+  <object id="6" name="down" gid="38" x="132" y="1190.67" width="32" height="32"/>
+  <object id="7" name="down" gid="38" x="98.6667" y="1190.67" width="32" height="32"/>
+  <object id="8" name="right-down" gid="39" x="222.667" y="1172" width="32" height="32"/>
+  <object id="9" name="left-down" gid="37" x="66.6667" y="1185.33" width="32" height="32"/>
+  <object id="10" name="left" gid="21" x="866" y="1826" width="32" height="32"/>
+  <object id="11" name="left" gid="21" x="898" y="1825.5" width="32" height="32"/>
+  <object id="12" name="left" gid="21" x="898" y="1856.5" width="32" height="32"/>
+  <object id="13" name="left" gid="21" x="898" y="1887.5" width="32" height="32"/>
+  <object id="14" name="left" gid="21" x="897.5" y="1919" width="32" height="32"/>
+  <object id="15" name="left" gid="21" x="897.5" y="1950" width="32" height="32"/>
+  <object id="16" name="left" gid="21" x="867.5" y="1857.5" width="32" height="32"/>
+  <object id="18" name="left" gid="21" x="868.5" y="1888.5" width="32" height="32"/>
+  <object id="19" name="left" gid="21" x="867.5" y="1921.5" width="32" height="32"/>
+  <object id="20" name="left" gid="21" x="866.5" y="1952" width="32" height="32"/>
+  <object id="21" name="right" gid="23" x="1229.45" y="161.455" width="32" height="32"/>
+  <object id="22" name="right" gid="23" x="1230" y="194" width="32" height="32"/>
+  <object id="23" name="right" gid="23" x="1231" y="225" width="32" height="32"/>
+  <object id="24" name="right-down" gid="39" x="1217" y="254" width="32" height="32"/>
+  <object id="26" name="right-down" gid="39" x="1188" y="267" width="32" height="32"/>
+  <object id="27" name="right-down" gid="39" x="1162" y="277" width="32" height="32"/>
+  <object id="28" name="right-up" gid="7" x="1223" y="134" width="32" height="32"/>
+  <object id="32" name="right-up" gid="7" x="1196" y="125" width="32" height="32"/>
+  <object id="33" name="right-up" gid="7" x="1169" y="120" width="32" height="32"/>
+  <object id="49" name="down" gid="38" x="1281.33" y="2526.67" width="32" height="32"/>
+  <object id="51" name="down" gid="38" x="1312" y="2529.33" width="32" height="32"/>
+  <object id="52" name="right" gid="23" x="1368" y="2476" width="32" height="32"/>
+  <object id="53" name="right" gid="23" x="1366.67" y="2448" width="32" height="32"/>
+  <object id="54" name="right" gid="23" x="1366.67" y="2424" width="32" height="32"/>
+  <object id="55" name="right" gid="23" x="1368" y="2400" width="32" height="32"/>
+  <object id="56" name="right" gid="23" x="1369.33" y="2366.67" width="32" height="32"/>
+  <object id="57" name="right-down" gid="5" x="1342.67" y="2502.67" width="32" height="32"/>
+  <object id="58" name="right-down" gid="5" x="1257.33" y="2546.67" width="32" height="32"/>
+  <object id="60" name="right-down" gid="5" x="1230.67" y="2557.33" width="32" height="32"/>
+  <object id="61" name="right-down" gid="5" x="1205.33" y="2573.33" width="32" height="32"/>
+  <object id="70" name="down" gid="6" x="1060" y="1452" width="32" height="32"/>
+  <object id="91" name="right-down" gid="39" x="1666.67" y="1093.33" width="32" height="32"/>
+  <object id="133" name="left" gid="21" x="543" y="1567" width="32" height="32"/>
+  <object id="134" name="left-down" gid="37" x="553" y="1599" width="32" height="32"/>
+  <object id="135" name="left-down" gid="37" x="583" y="1616" width="32" height="32"/>
+  <object id="136" name="down" gid="38" x="616" y="1619" width="32" height="32"/>
+  <object id="137" name="right" gid="23" x="250" y="1515" width="32" height="32"/>
+  <object id="138" name="right-down" gid="39" x="234" y="1545" width="32" height="32"/>
+  <object id="139" name="right" gid="23" x="249" y="1483" width="32" height="32"/>
+  <object id="140" name="right-down" gid="39" x="1464" y="1205" width="32" height="32"/>
+  <object id="141" name="right-down" gid="39" x="1492" y="1193" width="32" height="32"/>
+  <object id="142" name="right-down" gid="39" x="1631.67" y="1106.33" width="32" height="32"/>
+  <object id="143" name="right-down" gid="39" x="1615.67" y="1125.33" width="32" height="32"/>
+  <object id="144" name="right-down" gid="39" x="1577.67" y="1130.33" width="32" height="32"/>
+  <object id="145" name="right-down" gid="39" x="1540.67" y="1152.33" width="32" height="32"/>
+  <object id="146" name="right-down" gid="39" x="1509.67" y="1166.33" width="32" height="32"/>
+  <object id="147" name="down" gid="6" x="1092" y="1452" width="32" height="32"/>
+  <object id="148" name="down" gid="6" x="1124" y="1452" width="32" height="32"/>
+  <object id="149" name="down" gid="6" x="1157" y="1452" width="32" height="32"/>
+  <object id="150" name="down" gid="6" x="1188" y="1452" width="32" height="32"/>
+  <object id="151" name="down" gid="6" x="1220" y="1452" width="32" height="32"/>
+  <object id="152" name="down" gid="6" x="1251" y="1452" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup id="4" name="Spawns">
+  <object id="1" name="boatSpawn" x="357" y="403">
    <point/>
   </object>
  </objectgroup>

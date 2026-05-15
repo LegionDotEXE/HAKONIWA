@@ -199,7 +199,6 @@ export default class InventorySystem {
                         COLLISION_DMG_MAX
                     );
                 }
-
                 this._lastCollisionTime = now;
                 this.damage(dmg);
 

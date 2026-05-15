@@ -16,6 +16,8 @@ export default class River extends Phaser.Scene
     {
         this.load.path = 'assets/';
 
+        this.load.audio('bgm', 'game_bgm.mp3');
+
         this.load.image('boat', 'boat.png');
         this.load.spritesheet('leftPaddle', 'left_paddle.png', {
             frameWidth: 32,
@@ -36,6 +38,9 @@ export default class River extends Phaser.Scene
 
     create()
     {
+        if (!this.sound.get('bgm')) {
+            this.sound.add('bgm').play({ loop: true, volume: 0.1 });
+        }
         const map = this.add.tilemap('tilemapJSON');
         const tileset = map.addTilesetImage('tileset', 'tilesetImage');
         const backgroundLayer = map.createLayer('Base Layer', tileset, 0, 0);
@@ -49,6 +54,17 @@ export default class River extends Phaser.Scene
         this.riverGrasses = [
             ...map.createFromObjects('River Grasses', { name: 'river_grass1', frame: 82 }),
             ...map.createFromObjects('River Grasses', { name: 'river_grass2', frame: 83 })
+        ]
+
+        this.riverCurrents = [
+            ...map.createFromObjects('Currents', { name: 'up', frame: 5 }),
+            ...map.createFromObjects('Currents', { name: 'down', frame: 37 }),
+            ...map.createFromObjects('Currents', { name: 'left', frame: 20 }),
+            ...map.createFromObjects('Currents', { name: 'right', frame: 22 }),
+            ...map.createFromObjects('Currents', { name: 'left-up', frame: 4 }),
+            ...map.createFromObjects('Currents', { name: 'left-down', frame: 36 }),
+            ...map.createFromObjects('Currents', { name: 'right-up', frame: 6 }),
+            ...map.createFromObjects('Currents', { name: 'right-down', frame: 38 })
         ]
 
         // fish tile with two type of fish
