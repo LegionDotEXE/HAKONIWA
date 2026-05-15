@@ -10,7 +10,7 @@ const config = {
     pixelArt: true,
     physics: {
         default: 'matter',
-        matter: {gravity: { y: 0}, debug: false }
+        matter: {gravity: { y: 0}, debug: true }
     },
     // scene: [boat]
     scene: [river]

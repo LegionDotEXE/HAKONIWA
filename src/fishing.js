@@ -8,7 +8,7 @@ const TRACK_W             = 34;
 const TRACK_H             = 260;
 const SUCCESS_ZONE_H      = 60;
 const INDICATOR_H         = 12;
-const INDICATOR_SPEED     = 3.2;
+const INDICATOR_SPEED     = 2.5;
 const MAX_OSCILLATIONS    = 5;
 const BITE_ICON_OFFSET_Y  = -40;
 
@@ -20,6 +20,8 @@ export default class FishingSystem {
         this.fishCaught = 0;
         this.minigame   = false;
         this._biting    = false;
+        this.baseSpeed = 3.2; 
+        this.currentSpeed = this.baseSpeed;
 
 
         this._hint = scene.add.text(scene.scale.width / 2, scene.scale.height - 24, '[F] Fish', {
@@ -50,6 +52,9 @@ export default class FishingSystem {
     }
 
     _onFDown() {
+        // if you are not on the fish tile, you can't fish
+        if (!this.scene.canFish && !this.fishing && !this.minigame) return;
+
         if (!this.fishing && !this.minigame) {
             this.fishing = true;
             this._hint.setText('[F] Reel in');
@@ -91,8 +96,27 @@ export default class FishingSystem {
     }
 
     _end(caught) {
-        if (this._biteTimer) { this._biteTimer.remove(); this._biteTimer = null; }
-        if (this._prepTimer) { this._prepTimer.remove(); this._prepTimer = null; }
+        // if (this._biteTimer) { this._biteTimer.remove(); this._biteTimer = null; }
+        // if (this._prepTimer) { this._prepTimer.remove(); this._prepTimer = null; }
+        const fish = this.scene.currentFish;
+
+        if (fish) {
+            // set anims frame to 0
+            fish.anims.stop();
+            fish.setFrame(25);
+
+            // disable the sensor of overlap detection
+            fish.setSensor(false); 
+            
+            // cooldown for fishing
+            this.scene.time.delayedCall(10000, () => {
+                if (fish.active) {
+                    fish.setSensor(true);
+                    const anim = (fish.name === 'red_fish') ? 'redFishJump' : 'greenFishJump';
+                    fish.play(anim);
+                }
+            });
+        }
 
         this.fishing  = false;
         this._biting  = false;
@@ -155,6 +179,13 @@ export default class FishingSystem {
         this._oscillations = 0;
         this._lastDir      = this._indicatorDir;
 
+        if (this.scene.currentFish) {
+            const fish = this.scene.currentFish;
+            this.currentSpeed = this.baseSpeed + (fish.catchTime / 1000);
+        } else {
+            this.currentSpeed = this.baseSpeed;
+        }
+
         this._panel.setVisible(true);
     }
 
@@ -168,7 +199,7 @@ export default class FishingSystem {
         const trackTop = 8;
         const trackBot = 8 + TRACK_H;
 
-        this._indicatorY += this._indicatorDir * INDICATOR_SPEED;
+        this._indicatorY += this._indicatorDir * this.currentSpeed;
 
         if (this._indicatorY <= trackTop) {
             this._indicatorY   = trackTop;
@@ -203,4 +234,20 @@ export default class FishingSystem {
         this._indicatorGfx.lineStyle(1.5, inZone ? 0xaaffcc : 0x2288cc, 1);
         this._indicatorGfx.strokeRect(8, this._indicatorY, TRACK_W, INDICATOR_H);
     }
+
+    updateUI(canFish) {
+        if (this.fishing || this.minigame) {
+            this._hint.setVisible(true);
+        } else {
+            this._hint.setVisible(canFish);
+        }
+    }
+
+    cancelFishing() {
+        if (this.fishing || this.minigame) {
+            this._end(null);
+            this._showResult('Too far away!', '#ffaa00');
+        }
+    }
+
 }

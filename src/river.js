@@ -89,19 +89,56 @@ export default class River extends Phaser.Scene
                 isStatic: true,
                 isSensor: true,
                 label: 'fish',
-                shape: { type: 'rectangle', width: 16, height: 16 }
+                shape: { type: 'rectangle', width: 64, height: 64 }
             });
 
             if (fish.name === 'red_fish') {
                 fish.play('redFishJump');
-                fish.catchTime = 3000;
+                fish.catchTime = 2500;
                 fish.failChance = 0.4;
             }
             if (fish.name === 'green_fish') {
                 fish.play('greenFishJump');
-                fish.catchTime = 1500;
+                fish.catchTime = 700;
                 fish.failChance = 0.15;
             }
+        });
+
+        // fish-boat overlap detection
+        this.canFish = false;
+        this.currentFish = null;
+
+        this.matter.world.on('collisionstart', (event) => {
+            event.pairs.forEach((pair) => {
+                const { bodyA, bodyB } = pair;
+                const objA = bodyA.gameObject;
+                const objB = bodyB.gameObject;
+
+                if (objA === this.boat && bodyB.label === 'fish') {
+                    this.canFish = true;
+                    this.currentFish = objB;
+                } else if (objB === this.boat && bodyA.label === 'fish') {
+                    this.canFish = true;
+                    this.currentFish = objA;
+                }
+            });
+        });
+        this.matter.world.on('collisionend', (event) => {
+            event.pairs.forEach((pair) => {
+                const { bodyA, bodyB } = pair;
+                const objA = bodyA.gameObject;
+                const objB = bodyB.gameObject;
+
+                if ((objA === this.boat && bodyB.label === 'fish') ||
+                    (objB === this.boat && bodyA.label === 'fish')) {
+                    this.canFish = false;
+                    this.currentFish = null;
+
+                    if (this.fishing.fishing) {
+                        this.fishing.cancelFishing(); 
+                    }
+                }
+            });
         });
 
         const boatSpawn = map.findObject('Spawns', (obj) => obj.name === 'boatSpawn');
@@ -123,6 +160,10 @@ export default class River extends Phaser.Scene
         if (this.boat)
         {
             this.boat.update();
+        }
+
+        if (this.fishing) {
+            this.fishing.updateUI(this.canFish);
         }
 
         // coins proximity check and colleciton

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="60" height="85" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="92">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="85" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="133">
  <editorsettings>
   <export target="river_tilemap.json" format="json"/>
  </editorsettings>
@@ -677,8 +677,6 @@
   <object id="28" gid="7" x="1223" y="134" width="32" height="32"/>
   <object id="32" gid="7" x="1196" y="125" width="32" height="32"/>
   <object id="33" gid="7" x="1169" y="120" width="32" height="32"/>
-  <object id="48" gid="39" x="94" y="740" width="452" height="384"/>
-  <object id="47" gid="23" x="430" y="1759.33" width="234" height="344.667"/>
   <object id="49" gid="38" x="1281.33" y="2526.67" width="32" height="32"/>
   <object id="51" gid="38" x="1312" y="2529.33" width="32" height="32"/>
   <object id="52" gid="23" x="1368" y="2476" width="32" height="32"/>
@@ -690,7 +688,6 @@
   <object id="58" gid="5" x="1257.33" y="2546.67" width="32" height="32"/>
   <object id="60" gid="5" x="1230.67" y="2557.33" width="32" height="32"/>
   <object id="61" gid="5" x="1205.33" y="2573.33" width="32" height="32"/>
-  <object id="62" gid="2147483671" x="107" y="1759.67" width="234" height="344.667"/>
   <object id="63" gid="6" x="1086.67" y="1450.67" width="32" height="32"/>
   <object id="64" gid="6" x="1118.67" y="1450.67" width="32" height="32"/>
   <object id="65" gid="6" x="1153.33" y="1452" width="32" height="32"/>
@@ -712,6 +709,46 @@
   <object id="1" name="boatSpawn" x="441" y="2645">
    <point/>
   </object>
+ </objectgroup>
+ <objectgroup id="7" name="Fishes">
+  <object id="92" name="red_fish" gid="97" x="590" y="2425" width="32" height="32"/>
+  <object id="94" name="red_fish" gid="97" x="479" y="2041" width="32" height="32"/>
+  <object id="96" name="red_fish" gid="97" x="209" y="1838" width="32" height="32"/>
+  <object id="98" name="green_fish" gid="115" x="366" y="2498" width="32" height="32"/>
+  <object id="99" name="green_fish" gid="115" x="74" y="2179" width="32" height="32"/>
+  <object id="100" name="green_fish" gid="115" x="286" y="1898" width="32" height="32"/>
+  <object id="101" name="green_fish" gid="115" x="718" y="1839" width="32" height="32"/>
+  <object id="102" name="green_fish" gid="115" x="161" y="1474" width="32" height="32"/>
+  <object id="103" name="green_fish" gid="115" x="546" y="1127" width="32" height="32"/>
+  <object id="104" name="red_fish" gid="97" x="511" y="1367" width="32" height="32"/>
+  <object id="105" name="red_fish" gid="97" x="448" y="1295" width="32" height="32"/>
+  <object id="106" name="red_fish" gid="97" x="122" y="1018" width="32" height="32"/>
+  <object id="107" name="green_fish" gid="115" x="231" y="843" width="32" height="32"/>
+  <object id="108" name="green_fish" gid="115" x="176" y="795" width="32" height="32"/>
+  <object id="109" name="green_fish" gid="115" x="928" y="1151" width="32" height="32"/>
+  <object id="110" name="green_fish" gid="115" x="1070" y="930" width="32" height="32"/>
+  <object id="111" name="red_fish" gid="97" x="618" y="806" width="32" height="32"/>
+  <object id="112" name="green_fish" gid="115" x="1063" y="2024" width="32" height="32"/>
+  <object id="113" name="green_fish" gid="115" x="1169" y="1887" width="32" height="32"/>
+  <object id="114" name="red_fish" gid="97" x="1177" y="2454" width="32" height="32"/>
+  <object id="115" name="red_fish" gid="97" x="1224" y="2121" width="32" height="32"/>
+  <object id="116" name="red_fish" gid="97" x="1658" y="2348" width="32" height="32"/>
+  <object id="117" name="red_fish" gid="97" x="1694" y="1800" width="32" height="32"/>
+  <object id="118" name="green_fish" gid="115" x="1790" y="1659" width="32" height="32"/>
+  <object id="119" name="green_fish" gid="115" x="1604" y="1322" width="32" height="32"/>
+  <object id="120" name="green_fish" gid="115" x="1498" y="910" width="32" height="32"/>
+  <object id="121" name="red_fish" gid="97" x="1423" y="857" width="32" height="32"/>
+  <object id="122" name="red_fish" gid="97" x="1313" y="173" width="32" height="32"/>
+  <object id="123" name="red_fish" gid="97" x="1474" y="283" width="32" height="32"/>
+  <object id="124" name="red_fish" gid="97" x="1396" y="275" width="32" height="32"/>
+  <object id="125" name="red_fish" gid="97" x="1438" y="210" width="32" height="32"/>
+  <object id="126" name="red_fish" gid="97" x="1363" y="475" width="32" height="32"/>
+  <object id="127" name="red_fish" gid="97" x="1659" y="623" width="32" height="32"/>
+  <object id="128" name="red_fish" gid="97" x="458" y="373" width="32" height="32"/>
+  <object id="129" name="green_fish" gid="115" x="381" y="318" width="32" height="32"/>
+  <object id="130" name="green_fish" gid="115" x="168" y="478" width="32" height="32"/>
+  <object id="131" name="green_fish" gid="115" x="827" y="162" width="32" height="32"/>
+  <object id="132" name="red_fish" gid="97" x="1078" y="1380" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="6" name="Whirlpools">
   <object id="35" gid="8" x="790" y="787.563" width="82" height="82"/>
