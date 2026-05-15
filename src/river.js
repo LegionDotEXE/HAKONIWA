@@ -165,7 +165,7 @@ export default class River extends Phaser.Scene
         //this.inventory = new InventorySystem(this, this.boat, this.fishing);
         this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
         this.shop = new ShopSystem(this, this.inventory);
-        this.woodNodes = new WoodNodeSystem(this, this.boat, map, collisionLayer);
+        this.woodNodes = new WoodNodeSystem(this, this.boat, this.inventory, map, collisionLayer);
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
