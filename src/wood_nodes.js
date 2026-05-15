@@ -8,9 +8,10 @@ const DRIFT_SPEED_MIN = 3;
 const DRIFT_SPEED_MAX = 8;
 
 export default class WoodNodeSystem {
-    constructor(scene, boat, map, collisionLayer) {
+    constructor(scene, boat, inventory, map, collisionLayer) {
         this.scene = scene;
         this.boat = boat;
+        this.inventory = inventory;
         this.map = map;
         this.collisionLayer = collisionLayer;
 
@@ -76,8 +77,13 @@ export default class WoodNodeSystem {
     _collectNode(node) {
         this._despawnNode(node);
 
-        this.wood += Phaser.Math.Between(4, 8);
+        const amount = Phaser.Math.Between(4, 8);
+        this.wood += amount;
         this._counter.setText(`Wood: ${this.wood}`);
+
+        if (this.inventory) {
+            this.inventory.heal(amount);
+        }
     }
 
     _makeWoodSprite(x, y) {
