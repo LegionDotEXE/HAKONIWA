@@ -428,25 +428,33 @@ export default class InventorySystem {
         });
     }
 
-        const x = p.obj.x;
-        const y = p.obj.y;
+    // Fish actions
+    _eatFish(count) {
+        const fs = this.fishing;
+        const hp = Math.floor(count * 8);
 
-        p.bobTween.stop();
-        p.spinTween.stop();
+        if (fs) {
+            fs.fishCaught = 0;
+            fs._counter.setText('Fish: 0');
+        }
 
-        p.obj.destroy();
-        p.label.destroy();
+        this.heal(hp);
+        this.notify(`Ate ${count} fish  ·  +${hp} HP`, '#ffcc88');
+    }
 
-        this._burstCoins(x, y);
+    _sellFish(count) {
+        const fs   = this.fishing;
+        const gold = count * 3;
 
-        const ghost = makeCoin(scene, x, y, COIN_GHOST_SIZE, 21);
-        const hudX  = cam.scrollX + cam.width - 8 - COIN_HUD_SIZE / 2;
-        const hudY  = cam.scrollY + 18;
+        if (fs) {
+            fs.fishCaught = 0;
+            fs._counter.setText('Fish: 0');
+        }
 
         this.addGold(gold);
         this.notify(`Sold ${count} fish  ·  +${gold} coins`, '#88eeff');
 
-        scene.time.delayedCall(250, () => this.addGold(1));
+        this._fishSellBurst(gold);
     }
 
     // Animates a burst of ghost coins flying toward the gold HUD icon
@@ -476,6 +484,20 @@ export default class InventorySystem {
                 });
             });
         }
+    }
+
+    //  water tile check
+    _isWater(wx, wy) {
+        if (!this._collisionLayer || !this._map) return true;
+        
+        if (wx < 0 || wx > this._map.widthInPixels || wy < 0 || wy > this._map.heightInPixels) {
+            return false;
+        }
+
+        const tile = this._collisionLayer.getTileAtWorldXY(wx, wy);
+        if (!tile) return true;
+
+        return tile.collides !== true;
     }
 
     // Notification for certian events
