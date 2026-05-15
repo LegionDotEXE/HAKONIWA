@@ -13,7 +13,7 @@ export default class River extends Phaser.Scene
 
     preload()
     {
-        this.load.path = './assets/';
+        this.load.path = 'assets/';
 
         this.load.image('boat', 'boat.png');
         this.load.spritesheet('leftPaddle', 'left_paddle.png', {
