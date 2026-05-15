@@ -2,6 +2,7 @@ import Boat from './new_boat.js';
 import FishingSystem from './fishing.js';
 import InventorySystem from './inventory.js';
 import ShopSystem from './shop.js';
+import WoodNodeSystem from './wood_nodes.js';
 
 
 export default class River extends Phaser.Scene
@@ -30,6 +31,7 @@ export default class River extends Phaser.Scene
         this.load.tilemapTiledJSON('tilemapJSON', 'river_tilemap.json');
 
         this.load.image('coin', 'coin.png')
+        this.load.image('wood', 'wood.png');
     }
 
     create()
@@ -110,6 +112,7 @@ export default class River extends Phaser.Scene
         //this.inventory = new InventorySystem(this, this.boat, this.fishing);
         this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
         this.shop = new ShopSystem(this, this.inventory);
+        this.woodNodes = new WoodNodeSystem(this, this.boat, map, collisionLayer);
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -126,6 +129,11 @@ export default class River extends Phaser.Scene
         if (this.inventory)
         {
             this.inventory.update();
+        }
+
+        if (this.woodNodes)
+        {
+            this.woodNodes.update();
         }
     }
 }

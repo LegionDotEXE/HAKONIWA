@@ -80,13 +80,13 @@ export default class InventorySystem {
             strokeThickness: 3,
         }).setOrigin(1, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        this._hpBarBg = scene.add.rectangle(12, 45, 120, 12, 0x550000)
+        this._hpBarBg = scene.add.rectangle(12, 68, 120, 12, 0x550000)
             .setOrigin(0, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        this._hpBar = scene.add.rectangle(12, 45, 120, 12, 0xff3333)
+        this._hpBar = scene.add.rectangle(12, 68, 120, 12, 0xff3333)
             .setOrigin(0, 0.5).setDepth(HUD_DEPTH).setScrollFactor(0);
 
-        this._hpText = scene.add.text(138, 45, `HP ${HP_MAX}`, {
+        this._hpText = scene.add.text(138, 68, `HP ${HP_MAX}`, {
             fontFamily: 'monospace',
             fontSize:   '11px',
             color:      '#ffffff',
