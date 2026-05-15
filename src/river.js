@@ -26,7 +26,7 @@ export default class River extends Phaser.Scene
         });
 
         // river tilemap
-        this.load.image('tilesetImage', 'riverTileset.png');
+        this.load.spritesheet('tilesetImage', 'riverTileset.png', { frameWidth: 32, frameHeight: 32});
         this.load.tilemapTiledJSON('tilemapJSON', 'river_tilemap.json');
 
         this.load.image('coin', 'coin.png')
@@ -37,12 +37,70 @@ export default class River extends Phaser.Scene
         const map = this.add.tilemap('tilemapJSON');
         const tileset = map.addTilesetImage('tileset', 'tilesetImage');
         const backgroundLayer = map.createLayer('Base Layer', tileset, 0, 0);
-        const collisionLayer = map.createLayer('Collision Layer', tileset, 0, 0)
+        const collisionLayer = map.createLayer('Collision Layer', tileset, 0, 0);
         const decorationLayer = map.createLayer('Decoration Layer', tileset, 0, 0);
 
         collisionLayer.setCollisionByProperty({ collides: true });
         this.matter.world.convertTilemapLayer(collisionLayer);
         this.matter.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+        this.riverGrasses = [
+            ...map.createFromObjects('River Grasses', { name: 'river_grass1', frame: 82 }),
+            ...map.createFromObjects('River Grasses', { name: 'river_grass2', frame: 83 })
+        ]
+
+        // fish tile with two type of fish
+        this.anims.create({
+            key: 'redFishJump',
+            frameRate: 6,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('tilesetImage', {
+                start: 96,
+                end: 113
+            })
+        });
+        this.anims.create({
+            key: 'greenFishJump',
+            frameRate: 6,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('tilesetImage', {
+                start: 114,
+                end: 131
+            })
+        });
+
+        this.fishes = [
+            ...map.createFromObjects('Fishes', {
+                name: 'red_fish',
+                key: 'tilesetImage',
+                frame: 96
+            }),
+            ...map.createFromObjects('Fishes', {
+                name: 'green_fish',
+                key: 'tilesetImage',
+                frame: 114
+            })
+        ];
+
+        this.fishes.forEach(fish => {
+            this.matter.add.gameObject(fish, {
+                isStatic: true,
+                isSensor: true,
+                label: 'fish',
+                shape: { type: 'rectangle', width: 16, height: 16 }
+            });
+
+            if (fish.name === 'red_fish') {
+                fish.play('redFishJump');
+                fish.catchTime = 3000;
+                fish.failChance = 0.4;
+            }
+            if (fish.name === 'green_fish') {
+                fish.play('greenFishJump');
+                fish.catchTime = 1500;
+                fish.failChance = 0.15;
+            }
+        });
 
         const boatSpawn = map.findObject('Spawns', (obj) => obj.name === 'boatSpawn');
         this.boat = new Boat(this.matter.world, boatSpawn.x, boatSpawn.y, 'boat', 'leftPaddle', 'rightPaddle');
