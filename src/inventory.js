@@ -35,13 +35,13 @@ export default class InventorySystem {
         this._collisionLayer = collisionLayer;
 
         this.gold  = 0;
-        this.hp    = HP_MAX;
+        this.hp = HP_MAX;
         this.owned = {};
 
         this._pickups    = [];
         this._notifQueue = [];
         this._notifBusy  = false;
-        this._fishMenuOpen      = false;
+        this._fishMenuOpen  = false;
         this._lastCollisionTime = -Infinity;
 
         this._buildHUD();
@@ -100,12 +100,12 @@ export default class InventorySystem {
 
         this._notifText = scene.add.text(cam.width / 2, 46, '', {
             fontFamily: 'monospace',
-            fontSize:   '13px',
-            color:      '#ffffff',
-            stroke:     '#000000',
+            fontSize: '13px',
+            color: '#ffffff',
+            stroke: '#000000',
             strokeThickness: 3,
             backgroundColor: 'rgba(0,0,0,0.55)',
-            padding:    { x: 10, y: 4 },
+            padding: { x: 10, y: 4 },
         }).setOrigin(0.5, 0).setDepth(HUD_DEPTH).setScrollFactor(0).setAlpha(0);
     }
 
@@ -132,10 +132,10 @@ export default class InventorySystem {
         this.hp = Math.max(0, this.hp - amount);
         this._refreshHP();
         this.scene.tweens.add({
-            targets:  this._damageFlash,
-            alpha:    0.35,
+            targets: this._damageFlash,
+            alpha:0.35,
             duration: 60,
-            yoyo:     true,
+            yoyo:true,
             onComplete: () => this._damageFlash.setAlpha(0),
         });
         if (this.hp <= 0) this._onBoatDestroyed();
@@ -319,7 +319,7 @@ export default class InventorySystem {
             circleColor:  0xff6b35,
             circleStroke: 0xff9966,
             label:  'EAT',
-            sublabel: `+${Math.floor(fish * 8)} HP  ·  all fish consumed`,
+            sublabel: `+${Math.floor(fish * 8)} HP | All fish consumed`,
             labelColor: '#ffcc88',
             onSelect: () => this._eatFish(fish),
         });
