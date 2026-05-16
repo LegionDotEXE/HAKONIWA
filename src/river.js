@@ -3,6 +3,21 @@ import FishingSystem from './fishing.js';
 import InventorySystem from './inventory.js';
 import ShopSystem from './shop.js';
 import WoodNodeSystem from './wood_nodes.js';
+//Current variables (TWEAK FORCE this is a testing value)
+const CURRENT_FORCE    = 0.1;  
+const CURRENT_TURN     = 0.004;  
+ 
+const CURRENT_DIRS = {
+    'up':         {  x:  0, y: -1 },
+    'down':       {  x:  0, y:  1 },
+    'left':       {  x: -1, y:  0 },
+    'right':      {  x:  1, y:  0 },
+    'left-up':    {  x: -0.707, y: -0.707 },
+    'left-down':  {  x: -0.707, y:  0.707 },
+    'right-up':   {  x:  0.707, y: -0.707 },
+    'right-down': {  x:  0.707, y:  0.707 },
+};
+
 
 
 export default class River extends Phaser.Scene
@@ -66,6 +81,18 @@ export default class River extends Phaser.Scene
             ...map.createFromObjects('Currents', { name: 'right-up', frame: 6 }),
             ...map.createFromObjects('Currents', { name: 'right-down', frame: 38 })
         ]
+
+                this._currentZones = this.riverCurrents.map(obj => {
+            const dir = CURRENT_DIRS[obj.name] ?? { x: 0, y: 0 };
+            return {
+                x:           obj.x + (obj.width  ?? 32) / 2,
+                y:           obj.y + (obj.height ?? 32) / 2,
+                hw:          (obj.width  ?? 32) / 2,
+                hh:          (obj.height ?? 32) / 2,
+                dir,
+                targetAngle: Math.atan2(dir.y, dir.x) + Math.PI / 2,
+            };
+        });
 
         // fish tile with two type of fish
         this.anims.create({
@@ -171,18 +198,40 @@ export default class River extends Phaser.Scene
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     }
 
+        _applyCurrents()
+    {
+        const bx = this.boat.x;
+        const by = this.boat.y;
+ 
+        for (const zone of this._currentZones) {
+            if (Math.abs(bx - zone.x) > zone.hw) continue;
+            if (Math.abs(by - zone.y) > zone.hh) continue;
+ 
+            this.boat.applyForce({ x: zone.dir.x * CURRENT_FORCE, y: zone.dir.y * CURRENT_FORCE });
+ 
+            let angleDiff = zone.targetAngle - this.boat.rotation;
+            while (angleDiff >  Math.PI) angleDiff -= Math.PI * 2;
+            while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+            this.boat.setAngularVelocity(
+                this.boat.body.angularVelocity + angleDiff * CURRENT_TURN
+            );
+ 
+            break; 
+        }
+    }
+
     update()
     {
         if (this.boat)
         {
             this.boat.update();
+            this._applyCurrents();
         }
 
         if (this.fishing) {
             this.fishing.updateUI(this.canFish);
         }
 
-        // coins proximity check and colleciton
         if (this.inventory)
         {
             this.inventory.update();
