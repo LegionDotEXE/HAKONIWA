@@ -283,8 +283,8 @@ export default class InventorySystem {
             this.scene.input.once('pointerdown', this._outsideClickHandler);
         });
 
-        const panelW = 260;
-        const panelH = 180;
+        const panelW = 420;
+        const panelH = 130;
         const panelX = cam.width  / 2 - panelW / 2;
         const panelY = cam.height / 2 - panelH / 2;
         const depth  = HUD_DEPTH + 10;
@@ -310,70 +310,77 @@ export default class InventorySystem {
         div.lineBetween(panelX + 16, panelY + 38, panelX + panelW - 16, panelY + 38);
         this._fishMenuGroup.push(div);
 
-        const btnY1 = panelY + 62;
-        const btnY2 = panelY + 130;
-        const btnCx = panelX + panelW / 2;
+        const cols    = 4;
+        const colW    = panelW / cols;
+        //const btnY    = panelY + 120;
+        const btnY = panelY + panelH / 2 + 14;
 
-        this._makeFishOption({
-            cx: btnCx, cy: btnY1, depth,
-            circleColor:  0xff6b35,
-            circleStroke: 0xff9966,
-            label:  'EAT',
-            sublabel: `+${Math.floor(fish * 8)} HP | All fish consumed`,
-            labelColor: '#ffcc88',
-            onSelect: () => this._eatFish(fish),
+        const options = [
+            {
+                circleColor: 0xff6b35, circleStroke: 0xff9966,
+                label: 'EAT', sublabel: `+${Math.floor(fish * 8)} HP`,
+                labelColor: '#ffcc88',
+                onSelect: () => this._eatFish(fish),
+            },
+            {
+                circleColor: 0x35c8ff, circleStroke: 0x88eeff,
+                label: 'SELL', sublabel: `+${fish * 3} coins`,
+                labelColor: '#88eeff',
+                onSelect: () => this._sellFish(fish),
+            },
+            // placeholders for future fish assets
+            {
+                circleColor: 0xaa55ff, circleStroke: 0xcc99ff,
+                label: 'EMPTY', sublabel: 'Placeholder only',
+                labelColor: '#cc99ff',
+                onSelect: () => this.notify('Not yet available', '#cc99ff'),
+            },
+            {
+                circleColor: 0x55ff99, circleStroke: 0xaaffcc,
+                label: 'EMPTY', sublabel: 'Placeholder only',
+                labelColor: '#aaffcc',
+                onSelect: () => this.notify('Not yet available', '#aaffcc'),
+            },
+        ];
+
+        options.forEach((opt, i) => {
+            const cx = panelX + colW * i + colW / 2;
+            this._makeFishOption({ cx, cy: btnY, depth, ...opt });
         });
-
-        this._makeFishOption({
-            cx: btnCx, cy: btnY2, depth,
-            circleColor:  0x35c8ff,
-            circleStroke: 0x88eeff,
-            label:  'SELL',
-            sublabel: `+${fish * 3} | All fish sold`,
-            labelColor: '#88eeff',
-            onSelect: () => this._sellFish(fish),
-        });
-
-        // const hint = scene.add.text(btnCx, panelY + panelH - 10,
-        //     'click fish counter to close', {
-        //         fontFamily: 'monospace', fontSize: '9px', color: '#446644',
-        //     }
-        // ).setOrigin(0.5, 1).setDepth(depth + 1).setScrollFactor(0);
-        // this._fishMenuGroup.push(hint);
 
         const all = this._fishMenuGroup;
         all.forEach(obj => { obj.setAlpha(0); });
         scene.tweens.add({
             targets:  all,
-            alpha:  1,
+            alpha:    1,
             duration: 180,
-            ease: 'Sine.easeOut',
+            ease:     'Sine.easeOut',
         });
     }
 
     _makeFishOption({ cx, cy, depth, circleColor, circleStroke, label, sublabel, labelColor, onSelect }) {
-        const scene   = this.scene;
-        const radius  = 22;
+        const scene  = this.scene;
+        const radius = 18;
 
-        const circle = scene.add.circle(cx - 70, cy, radius, circleColor)
+        const circle = scene.add.circle(cx, cy - 18, radius, circleColor)
             .setStrokeStyle(2, circleStroke)
             .setDepth(depth + 2).setScrollFactor(0);
 
-        const ring = scene.add.circle(cx - 70, cy, radius - 6, circleColor)
+        const ring = scene.add.circle(cx, cy - 18, radius - 6, circleColor)
             .setStrokeStyle(1, circleStroke, 0.4)
             .setFillStyle(circleColor, 0)
             .setDepth(depth + 3).setScrollFactor(0);
 
-        const lbl = scene.add.text(cx - 70 + radius + 10, cy - 8, label, {
-            fontFamily: 'monospace', fontSize: '14px',
+        const lbl = scene.add.text(cx, cy + 8, label, {
+            fontFamily: 'monospace', fontSize: '12px',
             color: labelColor, stroke: '#000', strokeThickness: 2,
-        }).setOrigin(0, 0.5).setDepth(depth + 2).setScrollFactor(0);
+        }).setOrigin(0.5, 0.5).setDepth(depth + 2).setScrollFactor(0);
 
-        const sub = scene.add.text(cx - 70 + radius + 10, cy + 10, sublabel, {
-            fontFamily: 'monospace', fontSize: '10px', color: '#aaaaaa',
-        }).setOrigin(0, 0.5).setDepth(depth + 2).setScrollFactor(0);
+        const sub = scene.add.text(cx, cy + 24, sublabel, {
+            fontFamily: 'monospace', fontSize: '9px', color: '#aaaaaa',
+        }).setOrigin(0.5, 0.5).setDepth(depth + 2).setScrollFactor(0);
 
-        const hit = scene.add.rectangle(cx, cy, 240, 44)
+        const hit = scene.add.rectangle(cx, cy, 90, 80)
             .setDepth(depth + 4).setScrollFactor(0)
             .setInteractive({ useHandCursor: true });
 
