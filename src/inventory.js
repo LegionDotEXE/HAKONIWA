@@ -178,11 +178,12 @@ export default class InventorySystem {
 
             for (const pair of event.pairs) {
                 const { bodyA, bodyB } = pair;
-                const isBoat = bodyA === boatBody || bodyB === boatBody;
-                if (!isBoat) continue;
+
+                if (bodyA !== boatBody && bodyB !== boatBody) continue;
 
                 const other = bodyA === boatBody ? bodyB : bodyA;
-                if (other.label === 'shopZone') continue;
+
+                if (other.isSensor) continue;
 
                 const vx    = boatBody.velocity.x;
                 const vy    = boatBody.velocity.y;
