@@ -283,10 +283,10 @@ export default class InventorySystem {
             this.scene.input.once('pointerdown', this._outsideClickHandler);
         });
 
-        const panelX = 12;
-        const panelY = 36;
         const panelW = 260;
         const panelH = 180;
+        const panelX = cam.width  / 2 - panelW / 2;
+        const panelY = cam.height / 2 - panelH / 2;
         const depth  = HUD_DEPTH + 10;
 
         const backdrop = scene.add.graphics()
