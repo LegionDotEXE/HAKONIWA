@@ -43,11 +43,14 @@ export default class InventorySystem {
         this._notifBusy  = false;
         this._fishMenuOpen  = false;
         this._lastCollisionTime = -Infinity;
+        // addition for wood counter
+        this._woodMenuOpen = false;
 
         this._buildHUD();
         this._hookFishing();
         this._hookFishCounter();
         this._hookCollisions();
+        this.scene.time.delayedCall(0, () => this._hookWoodCounter());
     }
 
     _buildHUD() {
@@ -435,6 +438,225 @@ export default class InventorySystem {
         });
     }
 
+    // Wood counter interactivity
+    _hookWoodCounter() {
+        const wn = this.scene.woodNodes;
+        if (!wn || !wn._counter) return;
+
+        const counter = wn._counter;
+
+        counter.setInteractive({ useHandCursor: true });
+
+        counter.on('pointerover', () => {
+            if (this._woodMenuOpen) return;
+            this.scene.tweens.add({
+                targets: counter, scaleX: 1.12, scaleY: 1.12,
+                duration: 120, ease: 'Sine.easeOut',
+            });
+            counter.setStyle({ color: '#ffe4a0' });
+        });
+
+        counter.on('pointerout', () => {
+            if (this._woodMenuOpen) return;
+            this.scene.tweens.add({
+                targets: counter, scaleX: 1, scaleY: 1,
+                duration: 120, ease: 'Sine.easeOut',
+            });
+            counter.setStyle({ color: '#ffffff' });
+        });
+
+        counter.on('pointerdown', () => {
+            if (this._woodMenuOpen) {
+                this._closeWoodMenu();
+            } else {
+                this._openWoodMenu();
+            }
+        });
+    }
+
+    // Wood Menu
+    _openWoodMenu() {
+        const scene = this.scene;
+        const cam   = scene.cameras.main;
+        const wn    = scene.woodNodes;
+        const wood  = wn ? wn.wood : 0;
+
+        if (wood <= 0) {
+            this.notify('No wood to use!', '#ff9955');
+            return;
+        }
+
+        this._woodMenuOpen  = true;
+        this._woodMenuGroup = [];
+
+        this._woodOutsideClickHandler = () => {
+            if (this._woodMenuOpen) this._closeWoodMenu();
+        };
+        this.scene.time.delayedCall(50, () => {
+            this.scene.input.once('pointerdown', this._woodOutsideClickHandler);
+        });
+
+        const panelW = 300;
+        const panelH = 130;
+        const panelX = cam.width  / 2 - panelW / 2;
+        const panelY = cam.height / 2 - panelH / 2;
+        const depth  = HUD_DEPTH + 10;
+
+        const backdrop = scene.add.graphics()
+            .setDepth(depth).setScrollFactor(0);
+        backdrop.fillStyle(0x1a0e05, 0.92);
+        backdrop.fillRoundedRect(panelX, panelY, panelW, panelH, 12);
+        backdrop.lineStyle(2, 0xc8922a, 0.6);
+        backdrop.strokeRoundedRect(panelX, panelY, panelW, panelH, 12);
+        this._woodMenuGroup.push(backdrop);
+
+        const title = scene.add.text(panelX + panelW / 2, panelY + 18,
+            `${wood} wood in hold`, {
+                fontFamily: 'monospace', fontSize: '13px',
+                color: '#ffe4a0', stroke: '#000', strokeThickness: 2,
+            }
+        ).setOrigin(0.5, 0).setDepth(depth + 1).setScrollFactor(0);
+        this._woodMenuGroup.push(title);
+
+        const div = scene.add.graphics().setDepth(depth + 1).setScrollFactor(0);
+        div.lineStyle(1, 0xc8922a, 0.3);
+        div.lineBetween(panelX + 16, panelY + 38, panelX + panelW - 16, panelY + 38);
+        this._woodMenuGroup.push(div);
+
+        const cols = 2;
+        const colW = panelW / cols;
+        const btnY = panelY + panelH / 2 + 14;
+
+        const options = [
+            {
+                circleColor: 0xff6b35, circleStroke: 0xff9966,
+                label: 'BURN', sublabel: `+${Math.floor(wood * 5)} HP`,
+                labelColor: '#ffcc88',
+                onSelect: () => this._burnWood(wood),
+            },
+            {
+                circleColor: 0xf7c948, circleStroke: 0xffe480,
+                label: 'SELL', sublabel: `+${wood * 2} coins`,
+                labelColor: '#f7c948',
+                onSelect: () => this._sellWood(wood),
+            },
+        ];
+
+        options.forEach((opt, i) => {
+            const cx = panelX + colW * i + colW / 2;
+            this._makeWoodOption({ cx, cy: btnY, depth, ...opt });
+        });
+
+        const all = this._woodMenuGroup;
+        all.forEach(obj => { obj.setAlpha(0); });
+        scene.tweens.add({
+            targets:  all,
+            alpha:    1,
+            duration: 180,
+            ease:     'Sine.easeOut',
+        });
+    }
+
+    _makeWoodOption({ cx, cy, depth, circleColor, circleStroke, label, sublabel, labelColor, onSelect }) {
+        const scene  = this.scene;
+        const radius = 18;
+
+        const circle = scene.add.circle(cx, cy - 18, radius, circleColor)
+            .setStrokeStyle(2, circleStroke)
+            .setDepth(depth + 2).setScrollFactor(0);
+
+        const ring = scene.add.circle(cx, cy - 18, radius - 6, circleColor)
+            .setStrokeStyle(1, circleStroke, 0.4)
+            .setFillStyle(circleColor, 0)
+            .setDepth(depth + 3).setScrollFactor(0);
+
+        const lbl = scene.add.text(cx, cy + 8, label, {
+            fontFamily: 'monospace', fontSize: '12px',
+            color: labelColor, stroke: '#000', strokeThickness: 2,
+        }).setOrigin(0.5, 0.5).setDepth(depth + 2).setScrollFactor(0);
+
+        const sub = scene.add.text(cx, cy + 24, sublabel, {
+            fontFamily: 'monospace', fontSize: '9px', color: '#aaaaaa',
+        }).setOrigin(0.5, 0.5).setDepth(depth + 2).setScrollFactor(0);
+
+        const hit = scene.add.rectangle(cx, cy, 90, 80)
+            .setDepth(depth + 4).setScrollFactor(0)
+            .setInteractive({ useHandCursor: true });
+
+        hit.on('pointerover', () => {
+            scene.tweens.add({
+                targets: circle, scaleX: 1.15, scaleY: 1.15,
+                duration: 100, ease: 'Sine.easeOut',
+            });
+            lbl.setStyle({ color: '#ffffff' });
+        });
+        hit.on('pointerout', () => {
+            scene.tweens.add({
+                targets: circle, scaleX: 1, scaleY: 1,
+                duration: 100, ease: 'Sine.easeOut',
+            });
+            lbl.setStyle({ color: labelColor });
+        });
+        hit.on('pointerdown', () => {
+            this._closeWoodMenu();
+            onSelect();
+        });
+
+        this._woodMenuGroup.push(circle, ring, lbl, sub, hit);
+    }
+
+    _closeWoodMenu() {
+        if (!this._woodMenuOpen) return;
+        this._woodMenuOpen = false;
+        this.scene.input.off('pointerdown', this._woodOutsideClickHandler);
+
+        const wn      = this.scene.woodNodes;
+        const counter = wn ? wn._counter : null;
+
+        if (counter) {
+            counter.setStyle({ color: '#ffffff' });
+            this.scene.tweens.add({
+                targets: counter, scaleX: 1, scaleY: 1, duration: 80,
+            });
+        }
+
+        this.scene.tweens.add({
+            targets: this._woodMenuGroup,
+            alpha: 0,
+            duration: 140,
+            ease: 'Sine.easeIn',
+            onComplete: () => {
+                this._woodMenuGroup.forEach(obj => {
+                    if (obj && obj.destroy) obj.destroy();
+                });
+                this._woodMenuGroup = [];
+            },
+        });
+    }
+
+    // Wood actions
+    _burnWood(count) {
+        const wn = this.scene.woodNodes;
+        const hp = Math.floor(count * 5);
+        if (wn) {
+            wn.wood = 0;
+            wn._counter.setText('Wood: 0');
+        }
+        this.heal(hp);
+        this.notify(`Burned ${count} wood  ·  +${hp} HP`, '#ffcc88');
+    }
+
+    _sellWood(count) {
+        const wn   = this.scene.woodNodes;
+        const gold = count * 2;
+        if (wn) {
+            wn.wood = 0;
+            wn._counter.setText('Wood: 0');
+        }
+        this.addGold(gold);
+        this.notify(`Sold ${count} wood  ·  +${gold} coins`, '#f7c948');
+    }
+        
     // Fish actions
     _eatFish(count) {
         const fs = this.fishing;
