@@ -60,11 +60,11 @@ const SHOP_CATALOGUE = [
     },
 ];
 
-const PANEL_W    = 420;
-const PANEL_H    = 500;
+const PANEL_W = 420;
+const PANEL_H = 500;
 const SHOP_DEPTH = 50;
 const HUD_DEPTH  = 30;
-const SHOP_KEY   = 'E';
+const SHOP_KEY = 'E';
 
 function popTween(scene, obj) {
     scene.tweens.add({
@@ -84,9 +84,9 @@ function shakeText(scene, obj) {
 
 export default class ShopSystem {
     constructor(scene, inventory) {
-        this.scene     = scene;
+        this.scene = scene;
         this.inventory = inventory;
-        this.isOpen    = false;
+        this.isOpen = false;
         this.nearZone  = false;
         this._itemRows = [];
 
@@ -119,9 +119,9 @@ export default class ShopSystem {
     // Shop UI Panel
     _buildPanel() {
         const scene = this.scene;
-        const cam   = scene.cameras.main;
-        const cx    = cam.width  / 2;
-        const cy    = cam.height / 2;
+        const cam = scene.cameras.main;
+        const cx = cam.width  / 2;
+        const cy = cam.height / 2;
 
         this._container = scene.add.container(cx, cy)
             .setDepth(SHOP_DEPTH).setScrollFactor(0).setVisible(false);
@@ -140,17 +140,17 @@ export default class ShopSystem {
 
         const title = scene.add.text(0, -PANEL_H/2 + 28, 'RIVER MARKET', {
             fontFamily: 'monospace',
-            fontSize:   '20px',
-            color:      '#f7c948',
-            stroke:     '#000000',
+            fontSize: '20px',
+            color:'#f7c948',
+            stroke:'#000000',
             strokeThickness: 3,
         }).setOrigin(0.5);
 
         this._panelGoldText = scene.add.text(
-            PANEL_W/2 - 16, -PANEL_H/2 + 28,
-            `💰 ${this.inventory.gold}`, {
-                fontFamily: 'monospace', fontSize: '14px', color: '#f7c948',
-            }
+            PANEL_W/2 - 10, -PANEL_H/2 + 28,
+            // `${this.inventory.gold}`, {
+            //     fontFamily: 'monospace', fontSize: '14px', color: '#f7c948',
+            // }
         ).setOrigin(1, 0.5);
 
         const div = scene.add.graphics();
@@ -159,8 +159,8 @@ export default class ShopSystem {
                          PANEL_W/2 - 16, -PANEL_H/2 + 52);
 
         const closeBtn = scene.add.text(
-            PANEL_W/2 - 10, -PANEL_H/2 + 8, 'X', {
-                fontFamily: 'monospace', fontSize: '18px', color: '#ff6666',
+            PANEL_W/2 - 12, -PANEL_H/2 + 10, 'X', {
+                fontFamily: 'monospace', fontSize: '20px', color: '#ff6666',
             }
         ).setOrigin(1, 0).setInteractive({ useHandCursor: true });
         closeBtn.on('pointerdown', () => this.close());
@@ -180,12 +180,12 @@ export default class ShopSystem {
     }
 
     _buildItemRows() {
-        const scene  = this.scene;
+        const scene = this.scene;
         const startY = -PANEL_H/2 + 72;
-        const rowH   = 72;
+        const rowH = 72;
         const iconSz = 36;
-        const btnW   = 76;
-        const btnH   = 26;
+        const btnW = 76;
+        const btnH = 26;
 
         SHOP_CATALOGUE.forEach((item, i) => {
             const y = startY + i * rowH;
@@ -275,19 +275,19 @@ export default class ShopSystem {
         // Floating sign in world space
         const sign = scene.add.text(shopX, shopY - 20, 'SHOP', {
             fontFamily: 'monospace',
-            fontSize:   '13px',
-            color:      '#f7c948',
+            fontSize: '13px',
+            color:'#f7c948',
             backgroundColor: 'rgba(0,0,0,0.65)',
-            padding:    { x: 6, y: 3 },
+            padding: { x: 6, y: 3 },
         }).setOrigin(0.5).setDepth(HUD_DEPTH);
 
         scene.tweens.add({
-            targets:  sign,
-            y:        shopY - 28,
+            targets: sign,
+            y: shopY - 28,
             duration: 1000,
-            yoyo:     true,
-            repeat:   -1,
-            ease:     'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
         });
 
         this._zoneSensor = scene.matter.add.circle(shopX, shopY, 60, {
@@ -299,18 +299,18 @@ export default class ShopSystem {
             scene.cameras.main.height - 52,
             `[${SHOP_KEY}]  Open Shop`, {
                 fontFamily: 'monospace',
-                fontSize:   '14px',
-                color:      '#aaffaa',
+                fontSize: '14px',
+                color: '#aaffaa',
                 backgroundColor: 'rgba(0,0,0,0.55)',
-                padding:    { x: 10, y: 4 },
+                padding: { x: 10, y: 4 },
             }
         ).setOrigin(0.5, 1).setDepth(HUD_DEPTH).setScrollFactor(0).setVisible(false);
 
         scene.events.on('update', () => {
             const boat = this.inventory.boat;
             if (!boat) return;
-            const dx      = boat.x - shopX;
-            const dy      = boat.y - shopY;
+            const dx  = boat.x - shopX;
+            const dy  = boat.y - shopY;
             const inRange = (dx * dx + dy * dy) < (90 * 90);
             if (inRange !== this.nearZone) {
                 this.nearZone = inRange;
@@ -344,8 +344,8 @@ export default class ShopSystem {
     close() {
         this.isOpen = false;
         this.scene.tweens.add({
-            targets:  this._container,
-            alpha:    0, scaleX: 0.85, scaleY: 0.85,
+            targets: this._container,
+            alpha:0, scaleX: 0.85, scaleY: 0.85,
             duration: 180, ease: 'Quad.easeIn',
             onComplete: () => this._container.setVisible(false),
         });
