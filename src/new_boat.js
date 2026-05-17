@@ -30,6 +30,10 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         this.lastLeft = { time: -9999, dir: 0 };
         this.lastRight = { time: -9999, dir: 0 };
 
+        // paddle cooldown
+        this.leftPaddleCooldown = false;
+        this.rigthPaddleCooldown = false;
+
         // create inputs
         this.createInputs();
 
@@ -155,6 +159,9 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
     }
 
     onPaddleKey(side, role) {
+        if (side === 'left' && this.leftPaddleCooldown) return;
+        if (side === 'right' && this.rigthPaddleCooldown) return;
+
         this.setPaddlePose(side, role);
         const now = this.scene.time.now;
         const stroke = side === 'left' ? this.leftStroke : this.rightStroke;
@@ -173,8 +180,10 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         const dir = stroke.firstRole === 'catch' ? 1 : -1;
         stroke.firstRole = null;
 
-        this.playStrokeAnims(side, dir);
+        if (side === 'left') this.leftPaddleCooldown = true;
+        if (side === 'right') this.rigthPaddleCooldown = true;
 
+        this.playStrokeAnims(side, dir);
         this.completeStroke(side, now, dir);
     }
 
@@ -188,6 +197,8 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         paddle.play(animKey, true);
         paddle.once('animationcomplete', () => {
             paddle.setFrame(0);
+            if (side === 'left') this.leftPaddleCooldown = false;
+            if (side === 'right') this.rigthPaddleCooldown = false;
         });
     }
 

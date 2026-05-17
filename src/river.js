@@ -138,12 +138,12 @@ export default class River extends Phaser.Scene
             if (fish.name === 'red_fish') {
                 fish.play('redFishJump');
                 fish.catchTime = 2500;
-                fish.failChance = 0.4;
+                fish.delayTime = 25000;
             }
             if (fish.name === 'green_fish') {
                 fish.play('greenFishJump');
                 fish.catchTime = 700;
-                fish.failChance = 0.15;
+                fish.delayTime = 10000;
             }
         });
 
@@ -157,10 +157,10 @@ export default class River extends Phaser.Scene
                 const objA = bodyA.gameObject;
                 const objB = bodyB.gameObject;
 
-                if (objA === this.boat && bodyB.label === 'fish') {
+                if (objA === this.boat && bodyB.label === 'fish' && !objB.isCoolingDown) {
                     this.canFish = true;
                     this.currentFish = objB;
-                } else if (objB === this.boat && bodyA.label === 'fish') {
+                } else if (objB === this.boat && bodyA.label === 'fish' && !objA.isCoolingDown) {
                     this.canFish = true;
                     this.currentFish = objA;
                 }
@@ -229,7 +229,8 @@ export default class River extends Phaser.Scene
         }
 
         if (this.fishing) {
-            this.fishing.updateUI(this.canFish);
+            const actualCanFish = this.canFish && !(this.currentFish?.isCoolingDown);
+            this.fishing.updateUI(actualCanFish);
         }
         // coins proximity check and colleciton
         if (this.inventory)

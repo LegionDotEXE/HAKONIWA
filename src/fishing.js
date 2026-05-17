@@ -101,17 +101,29 @@ export default class FishingSystem {
         const fish = this.scene.currentFish;
 
         if (fish) {
-            // set anims frame to 0
-            fish.anims.stop();
-            fish.setFrame(25);
+            fish.isCoolingDown = true;
 
-            // disable the sensor of overlap detection
-            fish.setSensor(false); 
+            // set anims frame to idle
+            fish.anims.stop();
+            const idleFrame = (fish.name === 'red_fish') ? 96 : 114;
+            fish.setFrame(idleFrame);
+
+            if (fish.body) {
+                this.scene.matter.world.remove(fish.body);
+            }
             
             // cooldown for fishing
-            this.scene.time.delayedCall(10000, () => {
+            this.scene.time.delayedCall(fish.delayTime, () => {
                 if (fish.active) {
-                    fish.setSensor(true);
+                    fish.isCoolingDown = false;
+
+                    this.scene.matter.add.gameObject(fish, {
+                        isStatic: true,
+                        isSensor: true,
+                        label: 'fish',
+                        shape: { type: 'rectangle', width: 64, height: 64 }
+                    });
+
                     const anim = (fish.name === 'red_fish') ? 'redFishJump' : 'greenFishJump';
                     fish.play(anim);
                 }
