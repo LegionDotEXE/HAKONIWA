@@ -24,10 +24,10 @@ export default class FishingSystem {
         this.currentSpeed = this.baseSpeed;
 
 
-        this._hint = scene.add.text(scene.scale.width / 2, scene.scale.height - 24, '[F] Fish', {
+        this._hint = scene.add.text(0, 0, '[F] Fish', {
             fontFamily: 'monospace', fontSize: '13px', color: '#88ccff',
             backgroundColor: 'rgba(0,0,0,0.45)', padding: { x: 8, y: 3 },
-        }).setOrigin(0.5, 1).setDepth(20).setScrollFactor(0);
+        }).setOrigin(0.5, 1).setDepth(20).setVisible(false);
 
         this._result = scene.add.text(scene.scale.width / 2, scene.scale.height / 2 - 30, '', {
             fontFamily: 'monospace', fontSize: '18px', color: '#ffffff',
@@ -250,8 +250,14 @@ export default class FishingSystem {
     updateUI(canFish) {
         if (this.fishing || this.minigame) {
             this._hint.setVisible(true);
+            this._hint.setPosition(this.boat.x, this.boat.y - 45);
+        } else if (canFish && this.scene.currentFish) {
+            this._hint.setVisible(true);
+            const fish = this.scene.currentFish;
+            this._hint.setPosition(fish.x, fish.y - 40);
+            this._hint.setText('[F] Fish');
         } else {
-            this._hint.setVisible(canFish);
+            this._hint.setVisible(false);
         }
     }
 
