@@ -82,7 +82,7 @@ export default class River extends Phaser.Scene
             ...map.createFromObjects('Currents', { name: 'right-down', frame: 38 })
         ]
 
-                this._currentZones = this.riverCurrents.map(obj => {
+        this._currentZones = this.riverCurrents.map(obj => {
             const dir = CURRENT_DIRS[obj.name] ?? { x: 0, y: 0 };
             return {
                 x:           obj.x + (obj.width  ?? 32) / 2,
