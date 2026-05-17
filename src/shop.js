@@ -269,8 +269,8 @@ export default class ShopSystem {
     _buildZone() {
         const scene = this.scene;
 
-        const shopX = 400;
-        const shopY = 200;
+        const shopX = 330
+        const shopY = 2050;
 
         // Floating sign in world space
         const sign = scene.add.text(shopX, shopY - 20, 'SHOP', {
@@ -290,7 +290,7 @@ export default class ShopSystem {
             ease: 'Sine.easeInOut',
         });
 
-        this._zoneSensor = scene.matter.add.circle(shopX, shopY, 60, {
+        this._zoneSensor = scene.matter.add.circle(shopX, shopY, 100, {
             isSensor: true, isStatic: true, label: 'shopZone',
         });
 

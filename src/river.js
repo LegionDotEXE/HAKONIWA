@@ -4,7 +4,7 @@ import InventorySystem from './inventory.js';
 import ShopSystem from './shop.js';
 import WoodNodeSystem from './wood_nodes.js';
 //Current variables (TWEAK FORCE this is a testing value)
-const CURRENT_FORCE    = 0.1;  
+const CURRENT_FORCE    = 0.05;  
 const CURRENT_TURN     = 0.004;  
  
 const CURRENT_DIRS = {
@@ -49,6 +49,9 @@ export default class River extends Phaser.Scene
 
         this.load.image('coin', 'coin.png')
         this.load.image('wood', 'wood.png');
+
+        // shop sign
+        this.load.image('shopSign', 'shop_sign.png');
     }
 
     create()
@@ -128,6 +131,7 @@ export default class River extends Phaser.Scene
         ];
 
         this.fishes.forEach(fish => {
+            fish.setScale(1.2);
             this.matter.add.gameObject(fish, {
                 isStatic: true,
                 isSensor: true,
@@ -193,6 +197,9 @@ export default class River extends Phaser.Scene
         this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
         this.shop = new ShopSystem(this, this.inventory);
         this.woodNodes = new WoodNodeSystem(this, this.boat, this.inventory, map, collisionLayer);
+
+        // shop sign sprite
+        this.add.image(330, 2060, 'shopSign');
 
         this.cameras.main.startFollow(this.boat, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
