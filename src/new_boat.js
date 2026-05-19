@@ -3,6 +3,14 @@ const STROKE_FORCE = 0.3;
 const SYNC_WINDOW_MS = 180;
 const SYNC_BONUS_FORCE = 0.1;
 const TURN_IMPULSE = 0.05;
+const PADDLE_METER_Y_OFFSET = 34;
+const PADDLE_METER_GAP = 100;
+const PADDLE_METER_SLOT_SIZE = 18;
+const PADDLE_METER_SLOT_GAP = 8;
+const PADDLE_METER_KEYS = {
+    left: ['W', 'Q'],
+    right: ['O', 'P'],
+};
 
 export default class Boat extends Phaser.Physics.Matter.Sprite
 {
@@ -39,6 +47,85 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
 
         // create paddle animations
         this.createAnims(left, right);
+
+        // create stroke timing meters
+        this.createPaddleMeters();
+    }
+
+    createPaddleMeters()
+    {
+        const centerX = this.scene.scale.width / 2;
+        const y = this.scene.scale.height - PADDLE_METER_Y_OFFSET;
+
+        this.paddleMeters = {
+            left: this.createPaddleMeter(centerX - PADDLE_METER_GAP, y, 0x66aaff, PADDLE_METER_KEYS.left),
+            right: this.createPaddleMeter(centerX + PADDLE_METER_GAP, y, 0xffcc66, PADDLE_METER_KEYS.right),
+        };
+    }
+
+    createPaddleMeter(x, y, color, labels)
+    {
+        const container = this.scene.add.container(x, y)
+            .setDepth(30)
+            .setScrollFactor(0)
+            .setVisible(false);
+        const fills = [];
+
+        for (let i = 0; i < 2; i++) {
+            const slotX = i * (PADDLE_METER_SLOT_SIZE + PADDLE_METER_SLOT_GAP);
+            const bg = this.scene.add.rectangle(slotX, 0, PADDLE_METER_SLOT_SIZE, PADDLE_METER_SLOT_SIZE, 0x0b1824, 0.65)
+                .setStrokeStyle(2, 0xffffff, 0.65);
+            const fill = this.scene.add.rectangle(slotX, 0, PADDLE_METER_SLOT_SIZE - 6, PADDLE_METER_SLOT_SIZE - 6, color, 1)
+                .setVisible(false);
+            const label = this.scene.add.text(slotX, 0, labels[i], {
+                fontFamily: 'monospace',
+                fontSize: '11px',
+                color: '#ffffff',
+            }).setOrigin(0.5);
+
+            container.add([bg, fill, label]);
+            fills.push(fill);
+        }
+
+        return { container, fills };
+    }
+
+    setPaddleMeter(side, filledKeys)
+    {
+        const meter = this.paddleMeters[side];
+        meter.container.setVisible(filledKeys.length > 0);
+        meter.fills.forEach((fill, index) => {
+            fill.setVisible(filledKeys.includes(PADDLE_METER_KEYS[side][index]));
+        });
+    }
+
+    hidePaddleMeter(side)
+    {
+        this.setPaddleMeter(side, []);
+    }
+
+    getPaddleKey(side, role)
+    {
+        if (side === 'left') {
+            return role === 'catch' ? 'Q' : 'W';
+        }
+
+        return role === 'catch' ? 'P' : 'O';
+    }
+
+    updatePaddleMeterTimeouts()
+    {
+        const now = this.scene.time.now;
+
+        if (this.leftStroke.firstRole !== null && now - this.leftStroke.firstTime > STROKE_WINDOW_MS) {
+            this.leftStroke.firstRole = null;
+            this.hidePaddleMeter('left');
+        }
+
+        if (this.rightStroke.firstRole !== null && now - this.rightStroke.firstTime > STROKE_WINDOW_MS) {
+            this.rightStroke.firstRole = null;
+            this.hidePaddleMeter('right');
+        }
     }
 
     // paddle inputs
@@ -169,16 +256,22 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
         if (stroke.firstRole === null || now - stroke.firstTime > STROKE_WINDOW_MS) {
             stroke.firstRole = role;
             stroke.firstTime = now;
+            this.setPaddleMeter(side, [this.getPaddleKey(side, role)]);
             return;
         }
 
         if (stroke.firstRole === role) {
             stroke.firstTime = now;
+            this.setPaddleMeter(side, [this.getPaddleKey(side, role)]);
             return;
         }
 
         const dir = stroke.firstRole === 'catch' ? 1 : -1;
+        const firstKey = this.getPaddleKey(side, stroke.firstRole);
+        const secondKey = this.getPaddleKey(side, role);
         stroke.firstRole = null;
+        this.setPaddleMeter(side, [firstKey, secondKey]);
+        this.scene.time.delayedCall(160, () => this.hidePaddleMeter(side));
 
         if (side === 'left') this.leftPaddleCooldown = true;
         if (side === 'right') this.rigthPaddleCooldown = true;
@@ -237,6 +330,8 @@ export default class Boat extends Phaser.Physics.Matter.Sprite
 
     update()
     {
+        this.updatePaddleMeterTimeouts();
+
         const sideOffset = 16;
 
         // see split 3 notes to understand the mathematical offset of the boat

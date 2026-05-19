@@ -48,7 +48,13 @@ export default class River extends Phaser.Scene
         this.load.tilemapTiledJSON('tilemapJSON', 'river_tilemap.json');
 
         this.load.image('coin', 'coin.png')
+
         this.load.image('wood', 'wood.png');
+        this.load.once('loaderror', (file) => {
+            if (file.key === 'wood') {
+                this.textures.remove('wood');
+            }
+        });
 
         // shop sign
         this.load.image('shopSign', 'shop_sign.png');
@@ -196,7 +202,7 @@ export default class River extends Phaser.Scene
         //this.inventory = new InventorySystem(this, this.boat, this.fishing);
         this.inventory = new InventorySystem(this, this.boat, this.fishing, map, collisionLayer);
         this.shop = new ShopSystem(this, this.inventory);
-        this.woodNodes = new WoodNodeSystem(this, this.boat, this.inventory, map, collisionLayer);
+        this.woodNodes = new WoodNodeSystem(this, this.boat, map, collisionLayer);
 
         // shop sign sprite
         this.add.image(330, 2060, 'shopSign');

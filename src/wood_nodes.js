@@ -6,18 +6,22 @@ const LIFETIME_MIN_MS = 20000;
 const LIFETIME_MAX_MS = 30000;
 const DRIFT_SPEED_MIN = 3;
 const DRIFT_SPEED_MAX = 8;
+const WOOD_IMAGE_SIZE = 30;
+const WOOD_COLLECT_ICON_SIZE = 18;
 
 export default class WoodNodeSystem {
-    constructor(scene, boat, inventory, map, collisionLayer) {
+    constructor(scene, boat, map, collisionLayer) {
         this.scene = scene;
         this.boat = boat;
-        this.inventory = inventory;
         this.map = map;
         this.collisionLayer = collisionLayer;
 
         this.wood = 0;
         this.nodes = [];
         this.waterTiles = this._findReachableWaterTiles();
+        this._woodPointerShown = false;
+        this._woodPointerDismissed = false;
+        this._woodPointer = null;
 
         this._counter = scene.add.text(12, 86, 'Wood: 0', {
             fontFamily: 'monospace',
@@ -75,14 +79,20 @@ export default class WoodNodeSystem {
     }
 
     _collectNode(node) {
-        this._despawnNode(node);
-
+        const sourceX = node.sprite.x;
+        const sourceY = node.sprite.y;
         const amount = Phaser.Math.Between(4, 8);
+
+        this._despawnNode(node);
+        this._playCollectBurst(sourceX, sourceY, amount);
+    }
+
+    _addWood(amount) {
         this.wood += amount;
         this._counter.setText(`Wood: ${this.wood}`);
 
-        if (this.inventory) {
-            this.inventory.heal(amount);
+        if (!this._woodPointerShown && !this._woodPointerDismissed) {
+            this._showWoodPointer();
         }
     }
 
@@ -92,6 +102,7 @@ export default class WoodNodeSystem {
 
         if (this.scene.textures.exists('wood')) {
             visual = this.scene.add.image(0, 0, 'wood');
+            visual.setDisplaySize(WOOD_IMAGE_SIZE, WOOD_IMAGE_SIZE);
             sprite.add(visual);
         } else {
             const shadow = this.scene.add.ellipse(0, 5, 23, 7, 0x000000, 0.18);
@@ -223,5 +234,128 @@ export default class WoodNodeSystem {
         const tileX = this.map.worldToTileX(x);
         const tileY = this.map.worldToTileY(y);
         return this._canBoatTravelThrough(tileX, tileY);
+    }
+
+    _showWoodPointer() {
+        this._woodPointerShown = true;
+
+        const bounds = this._counter.getBounds();
+        const pointer = this.scene.add.container(bounds.right + 18, bounds.centerY)
+            .setDepth(21)
+            .setScrollFactor(0);
+        this._woodPointer = pointer;
+
+        const triangle = this.scene.add.graphics();
+        triangle.fillStyle(0xfff0a0, 1);
+        triangle.lineStyle(2, 0x5a3b08, 1);
+        triangle.fillTriangle(0, 0, 18, -10, 18, 10);
+        triangle.strokeTriangle(0, 0, 18, -10, 18, 10);
+
+        const hitbox = this.scene.add.rectangle(9, 0, 30, 28, 0xffffff, 0)
+            .setInteractive({ useHandCursor: true });
+
+        pointer.add([triangle, hitbox]);
+        pointer.setSize(30, 28);
+
+        hitbox.on('pointerdown', () => {
+            this.dismissWoodPointer();
+        });
+
+        this.scene.tweens.add({
+            targets: pointer,
+            x: pointer.x + 8,
+            duration: 650,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
+    }
+
+    dismissWoodPointer() {
+        if (!this._woodPointer) {
+            return;
+        }
+
+        this._woodPointerDismissed = true;
+        this.scene.tweens.killTweensOf(this._woodPointer);
+        this._woodPointer.destroy();
+        this._woodPointer = null;
+    }
+
+    _playCollectBurst(worldX, worldY, amount) {
+        const camera = this.scene.cameras.main;
+        const startX = worldX - camera.scrollX;
+        const startY = worldY - camera.scrollY;
+        const target = this._getCounterTarget();
+
+        for (let i = 0; i < amount; i++) {
+            this.scene.time.delayedCall(i * 55, () => {
+                const icon = this._makeCollectIcon(
+                    startX + Phaser.Math.Between(-5, 5),
+                    startY + Phaser.Math.Between(-4, 4)
+                );
+
+                this.scene.tweens.add({
+                    targets: icon,
+                    y: icon.y - Phaser.Math.Between(12, 20),
+                    scaleX: 1.25,
+                    scaleY: 1.25,
+                    duration: 130,
+                    ease: 'Quad.easeOut',
+                    onComplete: () => {
+                        this.scene.tweens.add({
+                            targets: icon,
+                            x: target.x,
+                            y: target.y,
+                            scaleX: 0.3,
+                            scaleY: 0.3,
+                            alpha: 0,
+                            duration: 430,
+                            ease: 'Quad.easeIn',
+                            onComplete: () => {
+                                icon.destroy();
+                                this._addWood(1);
+                                this.scene.tweens.add({
+                                    targets: this._counter,
+                                    scaleX: 1.08,
+                                    scaleY: 1.08,
+                                    duration: 60,
+                                    yoyo: true,
+                                    ease: 'Sine.easeOut',
+                                });
+                            },
+                        });
+                    },
+                });
+            });
+        }
+    }
+
+    _makeCollectIcon(x, y) {
+        const icon = this.scene.add.container(x, y)
+            .setDepth(50)
+            .setScrollFactor(0);
+
+        if (this.scene.textures.exists('wood')) {
+            const image = this.scene.add.image(0, 0, 'wood');
+            image.setDisplaySize(WOOD_COLLECT_ICON_SIZE, WOOD_COLLECT_ICON_SIZE);
+            icon.add(image);
+        } else {
+            const shadow = this.scene.add.ellipse(0, 4, 14, 4, 0x000000, 0.18);
+            const body = this.scene.add.ellipse(0, 0, 16, 7, 0x8b5a2b);
+            const darkEnd = this.scene.add.ellipse(6, 0, 3, 6, 0x5e381a);
+            const highlight = this.scene.add.rectangle(-2, -1, 8, 1, 0xc99459);
+            icon.add([shadow, body, darkEnd, highlight]);
+        }
+
+        return icon;
+    }
+
+    _getCounterTarget() {
+        const bounds = this._counter.getBounds();
+        return {
+            x: bounds.centerX,
+            y: bounds.centerY,
+        };
     }
 }

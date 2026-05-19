@@ -22,6 +22,9 @@ export default class FishingSystem {
         this._biting    = false;
         this.baseSpeed = 3.2; 
         this.currentSpeed = this.baseSpeed;
+        this._fishPointerShown = false;
+        this._fishPointerDismissed = false;
+        this._fishPointer = null;
 
 
         this._hint = scene.add.text(0, 0, '[F] Fish', {
@@ -141,6 +144,9 @@ export default class FishingSystem {
         if (caught === true) {
             this.fishCaught++;
             this._counter.setText(`Fish: ${this.fishCaught}`);
+            if (!this._fishPointerShown && !this._fishPointerDismissed) {
+                this._showFishPointer();
+            }
             this._showResult('Fish caught!', '#55ff55');
         } else if (caught === false) {
             this._showResult('Fish got away!', '#ff5555');
@@ -266,6 +272,52 @@ export default class FishingSystem {
             this._end(null);
             this._showResult('Too far away!', '#ffaa00');
         }
+    }
+
+    _showFishPointer() {
+        this._fishPointerShown = true;
+
+        const bounds = this._counter.getBounds();
+        const pointer = this.scene.add.container(bounds.right + 18, bounds.centerY)
+            .setDepth(21)
+            .setScrollFactor(0);
+        this._fishPointer = pointer;
+
+        const triangle = this.scene.add.graphics();
+        triangle.fillStyle(0xfff0a0, 1);
+        triangle.lineStyle(2, 0x5a3b08, 1);
+        triangle.fillTriangle(0, 0, 18, -10, 18, 10);
+        triangle.strokeTriangle(0, 0, 18, -10, 18, 10);
+
+        const hitbox = this.scene.add.rectangle(9, 0, 30, 28, 0xffffff, 0)
+            .setInteractive({ useHandCursor: true });
+
+        pointer.add([triangle, hitbox]);
+        pointer.setSize(30, 28);
+
+        hitbox.on('pointerdown', () => {
+            this.dismissFishPointer();
+        });
+
+        this.scene.tweens.add({
+            targets: pointer,
+            x: pointer.x + 8,
+            duration: 650,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
+    }
+
+    dismissFishPointer() {
+        if (!this._fishPointer) {
+            return;
+        }
+
+        this._fishPointerDismissed = true;
+        this.scene.tweens.killTweensOf(this._fishPointer);
+        this._fishPointer.destroy();
+        this._fishPointer = null;
     }
 
 }

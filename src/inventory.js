@@ -256,6 +256,10 @@ export default class InventorySystem {
         });
 
         counter.on('pointerdown', () => {
+            if (fs.dismissFishPointer) {
+                fs.dismissFishPointer();
+            }
+
             if (this._fishMenuOpen) {
                 this._closeFishMenu();
             } else {
@@ -466,6 +470,10 @@ export default class InventorySystem {
         });
 
         counter.on('pointerdown', () => {
+            if (wn.dismissWoodPointer) {
+                wn.dismissWoodPointer();
+            }
+
             if (this._woodMenuOpen) {
                 this._closeWoodMenu();
             } else {
